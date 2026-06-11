@@ -4,6 +4,7 @@ import { fetchNotifications, markNotificationsRead } from '../../services/integr
 const EVENT_LABELS = {
   confirmed: 'Reserva confirmada',
   cancelled: 'Reserva cancelada',
+  new_reservation: 'Nueva reserva recibida',
 }
 
 function formatNotificationDate(value) {
@@ -47,9 +48,16 @@ export default function NotificationBell() {
 
     window.addEventListener('bookdesk:notifications-changed', handleChange)
     document.addEventListener('pointerdown', handleOutside)
+    const intervalId = window.setInterval(loadNotifications, 20000)
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') loadNotifications()
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
     return () => {
       window.removeEventListener('bookdesk:notifications-changed', handleChange)
       document.removeEventListener('pointerdown', handleOutside)
+      document.removeEventListener('visibilitychange', handleVisibility)
+      window.clearInterval(intervalId)
     }
   }, [])
 
@@ -97,7 +105,7 @@ export default function NotificationBell() {
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
             <div>
               <p className="text-sm font-black text-[#202837]">Notificaciones</p>
-              <p className="text-[11px] font-semibold text-[#8a94a6]">Confirmaciones y cancelaciones por email</p>
+              <p className="text-[11px] font-semibold text-[#8a94a6]">Actividad de reservas y envios por email</p>
             </div>
             <button onClick={loadNotifications} className="rounded-lg p-2 text-[#667085] hover:bg-slate-100" aria-label="Actualizar notificaciones">
               <svg className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -128,7 +136,16 @@ export default function NotificationBell() {
                           {failed ? 'Fallida' : 'Enviada'}
                         </span>
                       </div>
-                      <p className="mt-1 truncate text-[11px] font-semibold text-[#7a8496]">{item.recipient_email}</p>
+                      <p className="mt-1 truncate text-[11px] font-semibold text-[#7a8496]">
+                        {item.event === 'new_reservation'
+                          ? `${item.actor_name || 'Un miembro'} reservo ${item.resource_name || 'un recurso'}`
+                          : item.resource_name || item.recipient_email}
+                      </p>
+                      {item.reservation_date && (
+                        <p className="mt-0.5 text-[10px] font-semibold text-[#8a94a6]">
+                          {item.reservation_date} | {item.reservation_start_time}-{item.reservation_end_time}
+                        </p>
+                      )}
                       <p className="mt-1 text-[10px] font-semibold text-[#a0a7b5]">{formatNotificationDate(item.created_at)}</p>
                     </div>
                   </div>

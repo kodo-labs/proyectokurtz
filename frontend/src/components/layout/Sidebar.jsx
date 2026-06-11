@@ -48,6 +48,7 @@ const NAV_BY_ROLE = {
   ],
   admin: [
     { to: '/admin', label: 'Panel', icon: icons.dashboard, end: true },
+    { to: '/admin/reservations', label: 'Reservas', icon: icons.reservations },
     { to: '/admin/resources', label: 'Recursos', icon: icons.resources },
     { to: '/admin/reports', label: 'Reportes', icon: icons.reports },
   ],

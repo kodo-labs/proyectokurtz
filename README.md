@@ -35,8 +35,10 @@ Caso de uso a desarrollar: Un miembro elige un recurso (sala o escritorio) un ho
 BookDesk incorpora una capa de asistencia y comunicacion inteligente:
 
 - Emails reales con Resend al confirmar o cancelar reservas.
+- Aviso por email y campana para cada administrador cuando ingresa una reserva.
 - Auditoria de envios y campana de notificaciones.
 - Asistente con Claude limitado al dominio del coworking y a los datos autorizados.
+- Gestion administrativa de reservas con busqueda, filtros, detalle y cancelacion.
 - Panel administrador de reportes con filtros y exportacion CSV anonimizada.
 - Vercel Functions para mantener las claves fuera del bundle de React.
 

@@ -48,4 +48,23 @@ describe('integrator policy', () => {
     expect(email.html).toContain('Sala Alpha')
     expect(email.text).toContain('09:00 a 10:00')
   })
+
+  it('genera el aviso de nueva reserva para el administrador', () => {
+    const email = buildReservationEmail({
+      event: 'new_reservation',
+      profile: { name: 'Admin Demo' },
+      bookedBy: { name: 'Miembro Demo' },
+      resource: { name: 'Escritorio A1' },
+      reservation: {
+        title: 'Trabajo individual',
+        date: '2026-06-11',
+        start_time: '10:00',
+        end_time: '11:00',
+      },
+    })
+
+    expect(email.subject).toContain('Nueva reserva recibida')
+    expect(email.html).toContain('Miembro Demo')
+    expect(email.text).toContain('Escritorio A1')
+  })
 })

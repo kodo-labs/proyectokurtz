@@ -78,6 +78,16 @@ function fromResource(resource) {
   }
 }
 
+function toProfile(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    role: row.role,
+    avatar: row.avatar,
+  }
+}
+
 export async function signIn(email, password) {
   if (isSupabaseConfigured) {
     try {
@@ -231,6 +241,20 @@ export async function fetchResources() {
 
   if (error) throw error
   return data.map(toResource)
+}
+
+export async function fetchProfiles() {
+  if (!isSupabaseConfigured) {
+    return USERS.map(({ password, ...user }) => user)
+  }
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id,name,email,role,avatar')
+    .order('name', { ascending: true })
+
+  if (error) throw error
+  return data.map(toProfile)
 }
 
 export async function createResource(resource) {

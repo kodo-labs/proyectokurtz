@@ -42,8 +42,16 @@ RESEND_FROM_EMAIL=BookDesk <reservas@notificaciones.tudominio.com>
 ```
 
 El endpoint usa la clave de idempotencia
-`bookdesk:{evento}:{reservationId}`. El log unico por evento y reserva evita
-correos duplicados aun cuando el navegador reintenta.
+`bookdesk:{evento}:{reservationId}:{userId}`. El log unico por evento, reserva
+y destinatario evita correos duplicados aun cuando el navegador reintenta.
+
+Cuando un miembro confirma una reserva:
+
+- El miembro recibe el correo de confirmacion.
+- Cada perfil con rol `admin` recibe un correo de nueva reserva.
+- La campana del administrador muestra quien reservo, el recurso y el horario.
+- La campana se actualiza automaticamente cada 20 segundos y al volver a la
+  pestana.
 
 ## 3. Anthropic
 
@@ -80,15 +88,17 @@ Despues de guardar las variables hay que hacer Redeploy. `vercel.json` excluye
 
 1. Iniciar sesion como miembro.
 2. Crear una reserva.
-3. Comprobar la fila en `reservations`, el correo recibido, el registro `sent`
-   en `notification_logs` y la campana.
-4. Cancelar la misma reserva y repetir la comprobacion.
-5. Reintentar el endpoint con el mismo evento: debe devolver `duplicate: true`.
-6. Consultar al asistente por reservas propias.
-7. Consultar una accion ("cancela mi reserva"): debe explicar el camino, no
+3. Comprobar la fila en `reservations` y el correo de confirmacion del miembro.
+4. Iniciar sesion como administrador y comprobar el correo de nueva reserva,
+   el registro `new_reservation` en `notification_logs` y la campana.
+5. Abrir `/admin/reservations`, buscar la reserva y revisar su detalle.
+6. Cancelar la misma reserva y comprobar el correo de cancelacion del miembro.
+7. Reintentar el endpoint con el mismo evento: no debe crear correos duplicados.
+8. Consultar al asistente por reservas propias.
+9. Consultar una accion ("cancela mi reserva"): debe explicar el camino, no
    ejecutarla.
-8. Iniciar sesion como administrador y abrir `/admin/reports`.
-9. Aplicar filtros y exportar el CSV.
+10. Iniciar sesion como administrador y abrir `/admin/reports`.
+11. Aplicar filtros y exportar el CSV.
 
 ## 6. Exportacion reproducible
 

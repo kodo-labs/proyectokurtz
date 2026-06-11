@@ -84,18 +84,28 @@ create table if not exists public.notification_logs (
   actor_id text not null,
   channel text not null default 'email' check (channel in ('email')),
   recipient_email text not null,
-  event text not null check (event in ('confirmed', 'cancelled')),
+  event text not null check (event in ('confirmed', 'cancelled', 'new_reservation')),
   status text not null default 'processing' check (status in ('processing', 'sent', 'failed')),
   provider_id text,
   error text,
   read_at timestamptz,
   sent_at timestamptz,
   created_at timestamptz not null default now(),
-  constraint notification_logs_reservation_event_key unique (reservation_id, event)
+  constraint notification_logs_reservation_event_user_key unique (reservation_id, event, user_id)
 );
 
 alter table public.notification_logs
   add column if not exists channel text not null default 'email';
+
+alter table public.notification_logs
+  drop constraint if exists notification_logs_event_check;
+
+alter table public.notification_logs
+  add constraint notification_logs_event_check
+  check (event in ('confirmed', 'cancelled', 'new_reservation'));
+
+alter table public.notification_logs
+  drop constraint if exists notification_logs_reservation_event_key;
 
 do $$
 begin
@@ -103,11 +113,11 @@ begin
     select 1 from pg_constraint
     where conrelid = 'public.notification_logs'::regclass
       and contype = 'u'
-      and pg_get_constraintdef(oid) = 'UNIQUE (reservation_id, event)'
+      and pg_get_constraintdef(oid) = 'UNIQUE (reservation_id, event, user_id)'
   ) then
     alter table public.notification_logs
-      add constraint notification_logs_reservation_event_key
-      unique (reservation_id, event);
+      add constraint notification_logs_reservation_event_user_key
+      unique (reservation_id, event, user_id);
   end if;
 end $$;
 

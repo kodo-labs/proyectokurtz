@@ -14,13 +14,20 @@ function formatDate(date) {
   }).format(new Date(`${date}T12:00:00Z`))
 }
 
-export function buildReservationEmail({ event, profile, reservation, resource }) {
+export function buildReservationEmail({ event, profile, reservation, resource, bookedBy }) {
+  const isAdminNotice = event === 'new_reservation'
   const confirmed = event === 'confirmed'
-  const title = confirmed ? 'Reserva confirmada' : 'Reserva cancelada'
-  const accent = confirmed ? '#0070eb' : '#ba1a1a'
-  const intro = confirmed
-    ? 'Tu espacio quedo reservado correctamente.'
-    : 'La reserva fue cancelada correctamente.'
+  const title = isAdminNotice
+    ? 'Nueva reserva recibida'
+    : confirmed
+      ? 'Reserva confirmada'
+      : 'Reserva cancelada'
+  const accent = event === 'cancelled' ? '#ba1a1a' : '#0070eb'
+  const intro = isAdminNotice
+    ? `${escapeHtml(bookedBy?.name || 'Un miembro')} realizo una nueva reserva.`
+    : confirmed
+      ? 'Tu espacio quedo reservado correctamente.'
+      : 'La reserva fue cancelada correctamente.'
   const name = escapeHtml(profile.name || 'Miembro')
   const resourceName = escapeHtml(resource.name || 'Espacio')
   const reservationTitle = escapeHtml(reservation.title || 'Reserva')
@@ -29,7 +36,7 @@ export function buildReservationEmail({ event, profile, reservation, resource })
 
   return {
     subject: `BookDesk | ${title}: ${resource.name}`,
-    text: `${title}. ${resource.name}, ${formatDate(reservation.date)}, ${reservation.start_time} a ${reservation.end_time}.`,
+    text: `${title}. ${bookedBy?.name ? `${bookedBy.name}, ` : ''}${resource.name}, ${formatDate(reservation.date)}, ${reservation.start_time} a ${reservation.end_time}.`,
     html: `
       <div style="background:#f5f7ff;padding:32px;font-family:Inter,Arial,sans-serif;color:#181c23">
         <div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e0e2ed;border-radius:16px;overflow:hidden">
@@ -46,6 +53,7 @@ export function buildReservationEmail({ event, profile, reservation, resource })
             <div style="background:#f7f9ff;border-radius:12px;padding:20px">
               <div style="font-weight:800;font-size:18px">${resourceName}</div>
               <div style="color:#717786;margin-top:4px">${reservationTitle}</div>
+              ${isAdminNotice ? `<div style="margin-top:18px;font-size:14px"><strong>Miembro:</strong> ${escapeHtml(bookedBy?.name || 'Sin nombre')}</div>` : ''}
               <div style="margin-top:18px;font-size:14px"><strong>Fecha:</strong> ${date}</div>
               <div style="margin-top:8px;font-size:14px"><strong>Horario:</strong> ${schedule}</div>
             </div>

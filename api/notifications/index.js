@@ -1,10 +1,55 @@
 import { readJsonBody, requireMethod, sendJson } from '../../server/http.js'
 import { selectRows, updateRows, verifyRequestUser } from '../../server/supabaseAdmin.js'
 
-function visibilityFilter(profile) {
-  return profile.role === 'admin'
-    ? `or(user_id.eq.${profile.id},actor_id.eq.${profile.id})`
-    : `user_id.eq.${profile.id}`
+function inFilter(values) {
+  const unique = [...new Set(values.filter(Boolean))]
+  return unique.length ? `in.(${unique.join(',')})` : ''
+}
+
+async function enrichNotifications(notifications) {
+  if (!notifications.length) return []
+
+  const reservationFilter = inFilter(notifications.map(item => item.reservation_id))
+  const actorFilter = inFilter(notifications.map(item => item.actor_id))
+  const reservations = reservationFilter
+    ? await selectRows('reservations', {
+        select: 'id,resource_id,date,start_time,end_time,title',
+        id: reservationFilter,
+      })
+    : []
+  const resourceFilter = inFilter(reservations.map(item => item.resource_id))
+  const [resources, actors] = await Promise.all([
+    resourceFilter
+      ? selectRows('resources', {
+          select: 'id,name,type',
+          id: resourceFilter,
+        })
+      : Promise.resolve([]),
+    actorFilter
+      ? selectRows('profiles', {
+          select: 'id,name,email',
+          id: actorFilter,
+        })
+      : Promise.resolve([]),
+  ])
+
+  const reservationsById = new Map(reservations.map(item => [item.id, item]))
+  const resourcesById = new Map(resources.map(item => [item.id, item]))
+  const actorsById = new Map(actors.map(item => [String(item.id), item]))
+
+  return notifications.map(notification => {
+    const reservation = reservationsById.get(notification.reservation_id)
+    const resource = resourcesById.get(reservation?.resource_id)
+    const actor = actorsById.get(String(notification.actor_id))
+    return {
+      ...notification,
+      actor_name: actor?.name ?? '',
+      resource_name: resource?.name ?? '',
+      reservation_date: reservation?.date ?? '',
+      reservation_start_time: reservation?.start_time ?? '',
+      reservation_end_time: reservation?.end_time ?? '',
+    }
+  })
 }
 
 export default async function handler(request, response) {
@@ -27,7 +72,9 @@ export default async function handler(request, response) {
       }
 
       const notifications = await selectRows('notification_logs', query)
-      return sendJson(response, 200, { notifications })
+      return sendJson(response, 200, {
+        notifications: await enrichNotifications(notifications),
+      })
     }
 
     const { action } = readJsonBody(request)

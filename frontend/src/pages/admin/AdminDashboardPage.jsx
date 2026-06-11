@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import TopBar from '../../components/layout/TopBar'
 import Badge from '../../components/common/Badge'
 import WeeklyCalendar from '../../components/calendar/WeeklyCalendar'
-import { USERS, formatDate } from '../../data/mockData'
+import { formatDate } from '../../data/mockData'
 import { useReservations } from '../../context/ReservationsContext'
 import { useResources } from '../../context/ResourcesContext'
+import { fetchProfiles } from '../../services/bookdeskRepository'
 
 function AdminMetric({ label, value, detail, tone = 'blue' }) {
   const tones = {
@@ -33,6 +35,7 @@ export default function AdminDashboardPage() {
   const [blockEnd, setBlockEnd] = useState('18:00')
   const [blockSuccess, setBlockSuccess] = useState(false)
   const [notificationNotice, setNotificationNotice] = useState(null)
+  const [profiles, setProfiles] = useState([])
 
   const stats = useMemo(() => {
     const realReservations = reservations.filter(r => !r.isBlocked)
@@ -50,13 +53,17 @@ export default function AdminDashboardPage() {
     }
   }, [resources, selectedResource])
 
+  useEffect(() => {
+    fetchProfiles().then(setProfiles).catch(() => setProfiles([]))
+  }, [])
+
   const recent = reservations
     .filter(r => !r.isBlocked)
     .sort((a, b) => (b.date + b.startTime).localeCompare(a.date + a.startTime))
     .slice(0, 6)
 
   function getUserName(userId) {
-    return USERS.find(u => u.id === userId)?.name ?? 'Desconocido'
+    return profiles.find(profile => String(profile.id) === String(userId))?.name ?? 'Perfil no disponible'
   }
 
   async function handleBlock() {
@@ -197,7 +204,12 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="rounded-[24px] border border-white/80 bg-white/72 p-5 shadow-[0_22px_60px_rgba(35,55,95,0.08)] backdrop-blur">
-            <h2 className="text-lg font-black text-[#202837]">Reservas</h2>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-lg font-black text-[#202837]">Reservas</h2>
+              <Link to="/admin/reservations" className="rounded-lg bg-blue-50 px-3 py-2 text-[10px] font-black text-[#2563eb] hover:bg-blue-100">
+                Ver todas
+              </Link>
+            </div>
             <div className="mt-4 overflow-hidden rounded-2xl bg-white/80">
               <div className="max-h-[560px] overflow-y-auto">
                 {reservations
