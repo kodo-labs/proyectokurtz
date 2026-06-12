@@ -113,6 +113,7 @@ export default function AdminReportsPage() {
                 <option value="">Todos</option>
                 <option value="confirmed">Confirmada</option>
                 <option value="pending">Pendiente</option>
+                <option value="completed">Finalizada</option>
                 <option value="cancelled">Cancelada</option>
               </select>
             </label>

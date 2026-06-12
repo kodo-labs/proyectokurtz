@@ -3,6 +3,7 @@ import TopBar from '../../components/layout/TopBar'
 import Badge from '../../components/common/Badge'
 import { useReservations } from '../../context/ReservationsContext'
 import { useResources } from '../../context/ResourcesContext'
+import { reservationHasEnded } from '../../utils/reservationRules'
 
 const emptyForm = { name: '', type: 'room', capacity: 4, floor: 1, description: '', amenities: '' }
 
@@ -74,7 +75,12 @@ export default function AdminResourcesPage() {
   }
 
   function getReservationCount(resourceId) {
-    return reservations.filter(r => r.resourceId === resourceId && r.status !== 'cancelled' && !r.isBlocked).length
+    return reservations.filter(r =>
+      r.resourceId === resourceId &&
+      r.status !== 'cancelled' &&
+      !r.isBlocked &&
+      !reservationHasEnded(r)
+    ).length
   }
 
   return (
@@ -165,7 +171,7 @@ export default function AdminResourcesPage() {
                 </div>
                 <div className="rounded-xl bg-white/80 p-3">
                   <p className="text-lg font-black text-[#202837]">{getReservationCount(resource.id)}</p>
-                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#8a94a6]">Reservas</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.12em] text-[#8a94a6]">Activas</p>
                 </div>
               </div>
               <div className="mt-4 flex flex-wrap gap-1.5">

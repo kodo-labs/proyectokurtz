@@ -1,4 +1,4 @@
-import { parseTimeToMinutes } from './reservationRules.js'
+import { getReservationDisplayStatus, parseTimeToMinutes } from './reservationRules.js'
 
 export const CSV_COLUMNS = [
   ['reservationId', 'ID de reserva'],
@@ -21,6 +21,7 @@ const STATUS_LABELS = {
   confirmed: 'Confirmada',
   pending: 'Pendiente',
   cancelled: 'Cancelada',
+  completed: 'Finalizada',
 }
 
 export function anonymizeUserId(userId) {
@@ -40,12 +41,14 @@ export function calculateDurationMinutes(startTime, endTime) {
   return end - start
 }
 
-export function buildStatisticsRows(reservations, resources) {
+export function buildStatisticsRows(reservations, resources, now = new Date()) {
   const resourcesById = new Map(resources.map(resource => [resource.id, resource]))
 
   return reservations.map(reservation => {
     const resource = resourcesById.get(reservation.resourceId) ?? {}
     const date = new Date(`${reservation.date}T12:00:00Z`)
+
+    const displayStatus = getReservationDisplayStatus(reservation, now)
 
     return {
       reservationId: reservation.id,
@@ -59,8 +62,8 @@ export function buildStatisticsRows(reservations, resources) {
       startTime: reservation.startTime,
       endTime: reservation.endTime,
       durationMinutes: calculateDurationMinutes(reservation.startTime, reservation.endTime),
-      status: STATUS_LABELS[reservation.status] ?? reservation.status,
-      statusCode: reservation.status,
+      status: STATUS_LABELS[displayStatus] ?? displayStatus,
+      statusCode: displayStatus,
       isBlocked: reservation.isBlocked ? 'Si' : 'No',
       anonymizedUserId: anonymizeUserId(reservation.userId),
     }

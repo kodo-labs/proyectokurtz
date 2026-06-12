@@ -7,6 +7,10 @@ import { formatDate } from '../../data/mockData'
 import { useReservations } from '../../context/ReservationsContext'
 import { useResources } from '../../context/ResourcesContext'
 import { fetchProfiles } from '../../services/bookdeskRepository'
+import {
+  canCancelReservation,
+  getReservationDisplayStatus,
+} from '../../utils/reservationRules'
 
 function AdminMetric({ label, value, detail, tone = 'blue' }) {
   const tones = {
@@ -40,8 +44,9 @@ export default function AdminDashboardPage() {
   const stats = useMemo(() => {
     const realReservations = reservations.filter(r => !r.isBlocked)
     return {
-      confirmed: realReservations.filter(r => r.status === 'confirmed').length,
+      confirmed: realReservations.filter(r => getReservationDisplayStatus(r) === 'confirmed').length,
       pending: realReservations.filter(r => r.status === 'pending').length,
+      completed: realReservations.filter(r => getReservationDisplayStatus(r) === 'completed').length,
       cancelled: realReservations.filter(r => r.status === 'cancelled').length,
       blocked: reservations.filter(r => r.isBlocked).length,
     }
@@ -111,9 +116,10 @@ export default function AdminDashboardPage() {
             <h2 className="mt-3 max-w-2xl text-3xl font-black tracking-normal text-[#202837] md:text-4xl">
               Vista general del coworking para tomar decisiones rapido.
             </h2>
-            <div className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
               <AdminMetric label="Confirmadas" value={stats.confirmed} detail="reservas activas" tone="green" />
               <AdminMetric label="Pendientes" value={stats.pending} detail="requieren seguimiento" tone="amber" />
+              <AdminMetric label="Finalizadas" value={stats.completed} detail="horarios cumplidos" />
               <AdminMetric label="Canceladas" value={stats.cancelled} detail="historial" />
               <AdminMetric label="Bloqueos" value={stats.blocked} detail="mantenimiento" tone="violet" />
             </div>
@@ -135,7 +141,7 @@ export default function AdminDashboardPage() {
                       <p className="truncate text-sm font-black text-[#202837]">{resource?.name}</p>
                       <p className="truncate text-xs font-semibold text-[#8a94a6]">{getUserName(r.userId)} | {formatDate(r.date)}</p>
                     </div>
-                    <Badge variant={r.status} />
+                    <Badge variant={getReservationDisplayStatus(r)} />
                   </div>
                 )
               })}
@@ -224,9 +230,9 @@ export default function AdminDashboardPage() {
                             <p className="truncate text-sm font-black text-[#202837]">{resource?.name}</p>
                             <p className="mt-1 text-xs font-semibold text-[#7a8496]">{getUserName(r.userId)} | {r.startTime}-{r.endTime}</p>
                           </div>
-                          <Badge variant={r.status} />
+                          <Badge variant={getReservationDisplayStatus(r)} />
                         </div>
-                        {r.status !== 'cancelled' && (
+                        {canCancelReservation(r) && (
                           <button
                             onClick={() => handleCancelReservation(r.id)}
                             className="mt-3 text-xs font-black text-red-500 transition-colors hover:text-red-700"

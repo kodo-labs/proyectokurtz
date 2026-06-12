@@ -5,6 +5,10 @@ import { formatDate } from '../data/mockData'
 import { useReservations } from '../context/ReservationsContext'
 import { useAuth } from '../context/AuthContext'
 import { useResources } from '../context/ResourcesContext'
+import {
+  canCancelReservation,
+  getReservationDisplayStatus,
+} from '../utils/reservationRules'
 
 export default function ReservationsPage() {
   const { user } = useAuth()
@@ -20,7 +24,7 @@ export default function ReservationsPage() {
 
   const filtered = filter === 'all'
     ? myReservations
-    : myReservations.filter(r => r.status === filter)
+    : myReservations.filter(r => getReservationDisplayStatus(r) === filter)
 
   async function handleCancel(id) {
     const notification = await cancelReservation(id)
@@ -32,8 +36,9 @@ export default function ReservationsPage() {
 
   const counts = {
     all:       myReservations.length,
-    confirmed: myReservations.filter(r => r.status === 'confirmed').length,
+    confirmed: myReservations.filter(r => getReservationDisplayStatus(r) === 'confirmed').length,
     pending:   myReservations.filter(r => r.status === 'pending').length,
+    completed: myReservations.filter(r => getReservationDisplayStatus(r) === 'completed').length,
     cancelled: myReservations.filter(r => r.status === 'cancelled').length,
   }
 
@@ -57,6 +62,7 @@ export default function ReservationsPage() {
             { value: 'all',       label: `Todas (${counts.all})` },
             { value: 'confirmed', label: `Confirmadas (${counts.confirmed})` },
             { value: 'pending',   label: `Pendientes (${counts.pending})` },
+            { value: 'completed', label: `Finalizadas (${counts.completed})` },
             { value: 'cancelled', label: `Canceladas (${counts.cancelled})` },
           ].map(f => (
             <button
@@ -86,7 +92,8 @@ export default function ReservationsPage() {
           <div className="space-y-3">
             {filtered.map(r => {
               const res = resources.find(x => x.id === r.resourceId)
-              const canCancel = r.status === 'confirmed' || r.status === 'pending'
+              const displayStatus = getReservationDisplayStatus(r)
+              const canCancel = canCancelReservation(r)
               return (
                 <div
                   key={r.id}
@@ -108,7 +115,7 @@ export default function ReservationsPage() {
                         <p className="font-semibold text-gray-900 text-sm">{res?.name}</p>
                         <p className="text-xs text-gray-500 mt-0.5">{r.title}</p>
                       </div>
-                      <Badge variant={r.status} />
+                      <Badge variant={displayStatus} />
                     </div>
 
                     <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">

@@ -6,6 +6,10 @@ import { formatDate } from '../data/mockData'
 import { useReservations } from '../context/ReservationsContext'
 import { useAuth } from '../context/AuthContext'
 import { useResources } from '../context/ResourcesContext'
+import {
+  getReservationDisplayStatus,
+  reservationHasEnded,
+} from '../utils/reservationRules'
 
 function MiniMetric({ label, value, tone = 'blue' }) {
   const tones = {
@@ -40,7 +44,7 @@ export default function DashboardPage() {
   )
 
   const upcoming = myReservations
-    .filter(r => r.status !== 'cancelled')
+    .filter(r => r.status !== 'cancelled' && !reservationHasEnded(r))
     .sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime))
 
   const next = upcoming[0]
@@ -111,7 +115,7 @@ export default function DashboardPage() {
             <div className="grid gap-4 sm:grid-cols-3">
               <MiniMetric label="Reservas activas" value={upcoming.length} />
               <MiniMetric label="Reservas totales" value={myReservations.length} tone="violet" />
-              <MiniMetric label="Confirmadas" value={myReservations.filter(r => r.status === 'confirmed').length} tone="green" />
+              <MiniMetric label="Finalizadas" value={myReservations.filter(r => getReservationDisplayStatus(r) === 'completed').length} tone="green" />
             </div>
 
             <div className="rounded-[24px] border border-white/80 bg-white/72 p-5 shadow-[0_22px_60px_rgba(35,55,95,0.08)] backdrop-blur">
@@ -134,7 +138,7 @@ export default function DashboardPage() {
                         <p className="truncate text-sm font-black text-[#202837]">{resource?.name}</p>
                         <p className="mt-1 text-xs font-semibold text-[#7a8496]">{formatDate(r.date)} | {r.startTime}-{r.endTime}</p>
                       </div>
-                      <Badge variant={r.status} />
+                      <Badge variant={getReservationDisplayStatus(r)} />
                     </div>
                   )
                 })}
@@ -160,7 +164,7 @@ export default function DashboardPage() {
                       <p className="truncate text-sm font-black text-[#202837]">{resource?.name}</p>
                       <p className="text-xs font-semibold text-[#8a94a6]">{r.title}</p>
                     </div>
-                    <Badge variant={r.status} />
+                    <Badge variant={getReservationDisplayStatus(r)} />
                   </div>
                 )
               })}

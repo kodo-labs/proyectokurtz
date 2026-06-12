@@ -5,10 +5,17 @@ import { useReservations } from '../../context/ReservationsContext'
 import { useResources } from '../../context/ResourcesContext'
 import { fetchProfiles } from '../../services/bookdeskRepository'
 import { formatDate } from '../../data/mockData'
+import {
+  canCancelReservation,
+  getReservationDisplayStatus,
+} from '../../utils/reservationRules'
 
 const PAGE_SIZE = 8
 
 function ReservationDetail({ reservation, resource, profile, onClose, onCancel }) {
+  const displayStatus = getReservationDisplayStatus(reservation)
+  const canCancel = canCancelReservation(reservation)
+
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/30 p-4 backdrop-blur-sm" onClick={onClose}>
       <section className="w-full max-w-lg rounded-[24px] border border-white/90 bg-white/92 p-6 shadow-[0_30px_90px_rgba(35,55,95,0.25)] backdrop-blur-2xl" onClick={event => event.stopPropagation()}>
@@ -32,7 +39,7 @@ function ReservationDetail({ reservation, resource, profile, onClose, onCancel }
           </div>
           <div className="rounded-xl bg-[#f1f3fe] p-4">
             <p className="text-[10px] font-black uppercase text-[#8a94a6]">Estado</p>
-            <div className="mt-2"><Badge variant={reservation.status} /></div>
+            <div className="mt-2"><Badge variant={displayStatus} /></div>
           </div>
           <div className="rounded-xl bg-[#f1f3fe] p-4">
             <p className="text-[10px] font-black uppercase text-[#8a94a6]">Fecha</p>
@@ -50,7 +57,7 @@ function ReservationDetail({ reservation, resource, profile, onClose, onCancel }
         </div>
 
         <div className="mt-5 flex justify-end gap-2">
-          {reservation.status !== 'cancelled' && (
+          {canCancel && (
             <button onClick={() => onCancel(reservation.id)} className="rounded-xl bg-red-50 px-4 py-2.5 text-xs font-black text-red-600 hover:bg-red-100">
               Cancelar reserva
             </button>
@@ -97,7 +104,8 @@ export default function AdminReservationsPage() {
       .filter(reservation => {
         const profile = profilesById.get(String(reservation.userId))
         const resource = resourcesById.get(reservation.resourceId)
-        if (status && reservation.status !== status) return false
+        const displayStatus = getReservationDisplayStatus(reservation)
+        if (status && displayStatus !== status) return false
         if (resourceId && reservation.resourceId !== resourceId) return false
         if (from && reservation.date < from) return false
         if (to && reservation.date > to) return false
@@ -180,6 +188,7 @@ export default function AdminReservationsPage() {
                 <option value="">Todos</option>
                 <option value="confirmed">Confirmadas</option>
                 <option value="pending">Pendientes</option>
+                <option value="completed">Finalizadas</option>
                 <option value="cancelled">Canceladas</option>
               </select>
             </label>
@@ -217,6 +226,8 @@ export default function AdminReservationsPage() {
                 {currentRows.map(reservation => {
                   const profile = profilesById.get(String(reservation.userId))
                   const resource = resourcesById.get(reservation.resourceId)
+                  const displayStatus = getReservationDisplayStatus(reservation)
+                  const canCancel = canCancelReservation(reservation)
                   return (
                     <tr key={reservation.id} className="border-t border-slate-100 font-semibold text-[#414755]">
                       <td className="px-4 py-3">
@@ -227,13 +238,13 @@ export default function AdminReservationsPage() {
                       <td className="px-4 py-3">{formatDate(reservation.date)}</td>
                       <td className="px-4 py-3">{reservation.startTime}-{reservation.endTime}</td>
                       <td className="max-w-[180px] truncate px-4 py-3">{reservation.title}</td>
-                      <td className="px-4 py-3"><Badge variant={reservation.status} /></td>
+                      <td className="px-4 py-3"><Badge variant={displayStatus} /></td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
                           <button onClick={() => setSelected(reservation)} className="rounded-lg bg-blue-50 px-3 py-2 text-[10px] font-black text-[#2563eb] hover:bg-blue-100">
                             Ver detalle
                           </button>
-                          {reservation.status !== 'cancelled' && (
+                          {canCancel && (
                             <button onClick={() => handleCancel(reservation.id)} className="rounded-lg bg-red-50 px-3 py-2 text-[10px] font-black text-red-600 hover:bg-red-100">
                               Cancelar
                             </button>

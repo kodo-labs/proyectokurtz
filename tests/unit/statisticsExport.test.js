@@ -62,7 +62,7 @@ describe('statisticsExport', () => {
   })
 
   it('filtra por fecha, recurso, tipo y estado', () => {
-    const rows = buildStatisticsRows(reservations, resources)
+    const rows = buildStatisticsRows(reservations, resources, new Date(2026, 5, 9, 9, 30))
     const filtered = filterStatisticsRows(rows, {
       from: '2026-06-09',
       to: '2026-06-09',
@@ -81,7 +81,9 @@ describe('statisticsExport', () => {
   })
 
   it('calcula metricas excluyendo cancelaciones de las horas activas', () => {
-    const metrics = calculateStatistics(buildStatisticsRows(reservations, resources))
+    const metrics = calculateStatistics(
+      buildStatisticsRows(reservations, resources, new Date(2026, 5, 9, 9, 30))
+    )
     expect(metrics.totalReservations).toBe(2)
     expect(metrics.reservedHours).toBe(1.5)
     expect(metrics.cancellations).toBe(1)

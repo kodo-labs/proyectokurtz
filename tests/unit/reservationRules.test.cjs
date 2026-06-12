@@ -1,14 +1,20 @@
 let getSlotReservation
+let getReservationDisplayStatus
+let canCancelReservation
 let isSlotOccupied
 let isValidReservationRange
 let parseTimeToMinutes
+let reservationHasEnded
 
 beforeAll(async () => {
   const rules = await import('../../frontend/src/utils/reservationRules.js')
   getSlotReservation = rules.getSlotReservation
+  getReservationDisplayStatus = rules.getReservationDisplayStatus
+  canCancelReservation = rules.canCancelReservation
   isSlotOccupied = rules.isSlotOccupied
   isValidReservationRange = rules.isValidReservationRange
   parseTimeToMinutes = rules.parseTimeToMinutes
+  reservationHasEnded = rules.reservationHasEnded
 })
 
 const reservations = [
@@ -70,5 +76,24 @@ describe('reservationRules', () => {
 
   it('rechaza horas fuera del rango valido del dia', () => {
     expect(parseTimeToMinutes('24:00')).toBeNull()
+  })
+
+  it('marca como finalizada una reserva confirmada cuyo horario ya termino', () => {
+    const now = new Date(2026, 3, 7, 11, 0)
+
+    expect(reservationHasEnded(reservations[0], now)).toBe(true)
+    expect(getReservationDisplayStatus(reservations[0], now)).toBe('completed')
+  })
+
+  it('mantiene confirmada una reserva antes de su hora de finalizacion', () => {
+    const now = new Date(2026, 3, 7, 10, 59)
+
+    expect(getReservationDisplayStatus(reservations[0], now)).toBe('confirmed')
+  })
+
+  it('no permite cancelar una reserva cuando el horario ya termino', () => {
+    const now = new Date(2026, 3, 7, 11, 0)
+
+    expect(canCancelReservation(reservations[0], now)).toBe(false)
   })
 })
