@@ -74,9 +74,9 @@ describe('statisticsExport', () => {
     expect(filtered[0].reservationId).toBe('r1')
   })
 
-  it('escapa comas y conserva encabezados en el CSV', () => {
+  it('genera un CSV que Excel abre en columnas', () => {
     const csv = toCsv(buildStatisticsRows(reservations, resources))
-    expect(csv).toContain('ID de reserva,Fecha,Dia de semana')
+    expect(csv).toMatch(/^sep=;\r\nID de reserva;Fecha;Dia de semana/)
     expect(csv).toContain('"Sala Norte, Piso 2"')
   })
 

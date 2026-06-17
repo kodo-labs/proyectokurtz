@@ -23,6 +23,7 @@ const STATUS_LABELS = {
   cancelled: 'Cancelada',
   completed: 'Finalizada',
 }
+const CSV_SEPARATOR = ';'
 
 export function anonymizeUserId(userId) {
   const source = String(userId ?? 'sin-usuario')
@@ -100,15 +101,15 @@ export function calculateStatistics(rows) {
 
 function escapeCsv(value) {
   const text = String(value ?? '')
-  return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text
+  return /[",;\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text
 }
 
 export function toCsv(rows) {
-  const header = CSV_COLUMNS.map(([, label]) => escapeCsv(label)).join(',')
+  const header = CSV_COLUMNS.map(([, label]) => escapeCsv(label)).join(CSV_SEPARATOR)
   const lines = rows.map(row =>
-    CSV_COLUMNS.map(([key]) => escapeCsv(row[key])).join(',')
+    CSV_COLUMNS.map(([key]) => escapeCsv(row[key])).join(CSV_SEPARATOR)
   )
-  return [header, ...lines].join('\r\n')
+  return [`sep=${CSV_SEPARATOR}`, header, ...lines].join('\r\n')
 }
 
 export function downloadCsv(rows, filename = 'reservas-estadistica.csv') {
