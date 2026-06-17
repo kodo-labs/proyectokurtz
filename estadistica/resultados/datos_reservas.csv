@@ -1,0 +1,51 @@
+﻿ID_Reserva,Fecha,Tipo_Recurso,Duracion_Horas
+RES-001,2026-03-01,Sala de Reuniones,2.3
+RES-002,2026-03-01,Sala de Reuniones,1.92
+RES-003,2026-03-03,Sala de Reuniones,2.39
+RES-004,2026-03-05,Sala de Reuniones,2.91
+RES-005,2026-03-05,Sala de Reuniones,1.86
+RES-006,2026-03-07,Sala de Reuniones,1.86
+RES-007,2026-03-08,Sala de Reuniones,2.95
+RES-008,2026-03-08,Sala de Reuniones,2.46
+RES-009,2026-03-09,Sala de Reuniones,1.72
+RES-010,2026-03-09,Sala de Reuniones,2.33
+RES-011,2026-03-11,Sala de Reuniones,1.72
+RES-012,2026-03-12,Sala de Reuniones,1.72
+RES-013,2026-03-14,Sala de Reuniones,2.15
+RES-014,2026-03-15,Sala de Reuniones,0.85
+RES-015,2026-03-15,Sala de Reuniones,0.97
+RES-016,2026-03-23,Sala de Reuniones,1.66
+RES-017,2026-03-27,Sala de Reuniones,1.39
+RES-018,2026-03-28,Sala de Reuniones,2.19
+RES-019,2026-03-29,Sala de Reuniones,1.46
+RES-020,2026-04-02,Sala de Reuniones,1.15
+RES-021,2026-04-02,Escritorio Individual,5.47
+RES-022,2026-04-03,Escritorio Individual,3.77
+RES-023,2026-04-04,Escritorio Individual,4.07
+RES-024,2026-04-04,Escritorio Individual,2.58
+RES-025,2026-04-04,Escritorio Individual,3.46
+RES-026,2026-04-06,Escritorio Individual,4.11
+RES-027,2026-04-10,Escritorio Individual,2.85
+RES-028,2026-04-10,Escritorio Individual,4.38
+RES-029,2026-04-11,Escritorio Individual,3.4
+RES-030,2026-04-13,Escritorio Individual,3.71
+RES-031,2026-04-14,Escritorio Individual,3.4
+RES-032,2026-04-16,Escritorio Individual,5.85
+RES-033,2026-04-17,Escritorio Individual,3.99
+RES-034,2026-05-01,Escritorio Individual,2.94
+RES-035,2026-05-02,Escritorio Individual,4.82
+RES-036,2026-05-04,Escritorio Individual,5.52
+RES-037,2026-05-04,Escritorio Individual,6.67
+RES-038,2026-05-10,Escritorio Individual,4.93
+RES-039,2026-05-11,Escritorio Individual,5.44
+RES-040,2026-05-12,Escritorio Individual,6.66
+RES-041,2026-05-17,Escritorio Individual,7.09
+RES-042,2026-05-18,Escritorio Individual,6.64
+RES-043,2026-05-20,Escritorio Individual,6.41
+RES-044,2026-05-25,Escritorio Individual,6.26
+RES-045,2026-05-27,Escritorio Individual,5.32
+RES-046,2026-05-27,Sala de Reuniones,1.28
+RES-047,2026-05-27,Sala de Reuniones,1.36
+RES-048,2026-05-28,Sala de Reuniones,1.82
+RES-049,2026-05-29,Sala de Reuniones,1.6
+RES-050,2026-05-29,Sala de Reuniones,0.97

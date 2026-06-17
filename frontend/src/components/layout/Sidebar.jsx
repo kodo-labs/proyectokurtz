@@ -38,6 +38,12 @@ const icons = {
       <path d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
     </svg>
   ),
+  estadistica: (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M3 3v18h18" />
+      <path d="M7 16l4-8 4 4 4-6" />
+    </svg>
+  ),
 }
 
 const NAV_BY_ROLE = {
@@ -51,6 +57,7 @@ const NAV_BY_ROLE = {
     { to: '/admin/reservations', label: 'Reservas', icon: icons.reservations },
     { to: '/admin/resources', label: 'Recursos', icon: icons.resources },
     { to: '/admin/reports', label: 'Reportes', icon: icons.reports },
+    { to: '/admin/estadistica', label: 'Estadística', icon: icons.estadistica },
   ],
 }
 

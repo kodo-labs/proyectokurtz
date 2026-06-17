@@ -13,6 +13,7 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import AdminResourcesPage from './pages/admin/AdminResourcesPage'
 import AdminReportsPage from './pages/admin/AdminReportsPage'
 import AdminReservationsPage from './pages/admin/AdminReservationsPage'
+import AdminEstadisticaPage from './pages/admin/AdminEstadisticaPage'
 
 function ProtectedRoute({ children, allowedRoles }) {
   const { user, loading } = useAuth()
@@ -97,6 +98,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute allowedRoles={['admin']}>
               <AdminReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/estadistica"
+          element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminEstadisticaPage />
             </ProtectedRoute>
           }
         />
