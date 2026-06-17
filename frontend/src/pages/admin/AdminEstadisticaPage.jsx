@@ -299,19 +299,19 @@ export default function AdminEstadisticaPage() {
           </Insight>
         </Card>
 
-        {/* ─── ESTIMACIÓN Y VALIDACIÓN ─── */}
+        {/* ─── INTERVALO DE CONFIANZA ─── */}
         <Card>
-          <h2 className="text-lg font-black text-[#202837] mb-1">¿La duración promedio es la esperada?</h2>
-          <p className="text-xs text-[#667085] mb-5">Verificamos si la duración real coincide con lo que esperábamos ({inf.mu0} horas) y estimamos el rango real.</p>
+          <h2 className="text-lg font-black text-[#202837] mb-1">¿Cuál es la duración real promedio?</h2>
+          <p className="text-xs text-[#667085] mb-5">Estimamos con un 95% de confianza en qué rango se encuentra la duración media real de todas las reservas del coworking.</p>
 
           <div className="grid gap-3 sm:grid-cols-3 mb-6">
-            <Stat label="Estimación mínima" value={inf.icInf.toFixed(2) + ' h'} sub="Con 95% de confianza" color="blue" />
+            <Stat label="Mínimo estimado" value={inf.icInf.toFixed(2) + ' h'} sub="Límite inferior" color="blue" />
             <Stat label="Promedio observado" value={est.media.toFixed(2) + ' h'} sub="Mejor estimación" color="green" />
-            <Stat label="Estimación máxima" value={inf.icSup.toFixed(2) + ' h'} sub="Con 95% de confianza" color="blue" />
+            <Stat label="Máximo estimado" value={inf.icSup.toFixed(2) + ' h'} sub="Límite superior" color="blue" />
           </div>
 
           {/* Barra visual del intervalo */}
-          <div className="max-w-xl mx-auto mb-6">
+          <div className="max-w-xl mx-auto mb-5">
             <div className="flex justify-between text-[10px] font-bold text-[#667085] mb-1">
               <span>{inf.icInf.toFixed(2)}h</span>
               <span className="text-[#2563eb] font-black">{est.media.toFixed(2)}h</span>
@@ -328,23 +328,70 @@ export default function AdminEstadisticaPage() {
             </div>
           </div>
 
-          {/* Resultado de la validación */}
-          <div className={`rounded-xl p-4 ${inf.rechazo ? 'bg-orange-50/60' : 'bg-emerald-50/60'}`}>
-            <div className="flex items-center gap-3 mb-2">
-              <span className={`grid h-8 w-8 place-items-center rounded-full text-sm ${inf.rechazo ? 'bg-orange-100 text-orange-600' : 'bg-emerald-100 text-emerald-600'}`}>
-                {inf.rechazo ? '⚠' : '✓'}
-              </span>
-              <p className={`text-sm font-black ${inf.rechazo ? 'text-orange-800' : 'text-emerald-800'}`}>
-                {inf.rechazo
-                  ? `La duración promedio NO es ${inf.mu0} horas como se esperaba`
-                  : `La duración promedio es compatible con las ${inf.mu0} horas esperadas`
-                }
-              </p>
+          <Insight>
+            <p>Podemos afirmar con un <b>95% de confianza</b> que la duración promedio real de las reservas en BookDesk está entre <b>{inf.icInf.toFixed(2)}h</b> y <b>{inf.icSup.toFixed(2)}h</b>.</p>
+            <p>Esto le permite al administrador planificar la disponibilidad de recursos sabiendo que el uso típico ronda las <b>{est.media.toFixed(1)} horas</b>, con un margen estrecho de variación.</p>
+          </Insight>
+        </Card>
+
+        {/* ─── PRUEBA DE HIPÓTESIS ─── */}
+        <Card>
+          <h2 className="text-lg font-black text-[#202837] mb-1">Prueba de hipótesis: ¿las reservas duran {inf.mu0} horas?</h2>
+          <p className="text-xs text-[#667085] mb-5">Partimos de la suposición de que la duración promedio es de {inf.mu0} horas y verificamos si los datos reales confirman o contradicen esa idea.</p>
+
+          <div className="grid gap-4 sm:grid-cols-2 mb-5">
+            <div className="rounded-xl bg-slate-50 p-4">
+              <p className="text-xs font-black text-[#667085] uppercase mb-2">Suposición inicial</p>
+              <p className="text-sm text-[#202837]">La duración promedio de las reservas <b>es de {inf.mu0} horas</b>.</p>
+              <p className="text-[11px] text-[#8a94a6] mt-1">Si los datos no contradicen esto, la suposición se mantiene.</p>
             </div>
-            <p className="text-xs text-[#414755] ml-11">
+            <div className="rounded-xl bg-slate-50 p-4">
+              <p className="text-xs font-black text-[#667085] uppercase mb-2">Alternativa</p>
+              <p className="text-sm text-[#202837]">La duración promedio <b>es diferente de {inf.mu0} horas</b>.</p>
+              <p className="text-[11px] text-[#8a94a6] mt-1">Si los datos muestran una diferencia significativa, se acepta esta alternativa.</p>
+            </div>
+          </div>
+
+          {/* Barra visual de la decisión */}
+          <div className="rounded-xl border border-slate-100 bg-white/80 p-5 mb-5">
+            <p className="text-xs font-black text-[#667085] uppercase mb-3">Resultado de la prueba</p>
+            <div className="flex items-center justify-between mb-2 text-[10px] font-black">
+              <span className="text-red-500">Rechazar</span>
+              <span className="text-green-600">No rechazar</span>
+              <span className="text-red-500">Rechazar</span>
+            </div>
+            <div className="relative h-8 bg-gradient-to-r from-red-100 via-green-100 to-red-100 rounded-full overflow-hidden">
+              <div className="absolute left-[15%] top-0 bottom-0 w-0.5 bg-red-300" />
+              <div className="absolute right-[15%] top-0 bottom-0 w-0.5 bg-red-300" />
+              <div
+                className="absolute top-1/2 w-4 h-4 bg-[#2563eb] rounded-full -translate-x-1/2 -translate-y-1/2 shadow-lg ring-2 ring-white"
+                style={{ left: `${50 + (inf.tCalc / (inf.tCrit * 1.5)) * 35}%` }}
+              />
+            </div>
+            <div className="flex justify-between mt-1 text-[10px] font-semibold text-[#8a94a6]">
+              <span>Zona crítica</span>
+              <span className="font-black text-[#2563eb]">Valor observado</span>
+              <span>Zona crítica</span>
+            </div>
+          </div>
+
+          {/* Conclusión */}
+          <div className={`rounded-xl p-5 ${inf.rechazo ? 'bg-orange-50/60' : 'bg-emerald-50/60'}`}>
+            <div className="flex items-center gap-3 mb-3">
+              <span className={`grid h-10 w-10 place-items-center rounded-full text-lg ${inf.rechazo ? 'bg-orange-100' : 'bg-emerald-100'}`}>
+                {inf.rechazo ? '⚠️' : '✅'}
+              </span>
+              <div>
+                <p className={`text-sm font-black ${inf.rechazo ? 'text-orange-800' : 'text-emerald-800'}`}>
+                  {inf.rechazo ? 'La suposición se rechaza' : 'La suposición se mantiene'}
+                </p>
+                <p className="text-[11px] text-[#8a94a6]">Nivel de confianza: 95%</p>
+              </div>
+            </div>
+            <p className="text-sm text-[#414755]">
               {inf.rechazo
-                ? `Los datos muestran que la duración real difiere significativamente de ${inf.mu0}h. Se recomienda revisar la configuración de los slots de tiempo.`
-                : `No encontramos diferencia significativa entre el promedio real (${est.media.toFixed(2)}h) y las ${inf.mu0}h esperadas. Los slots de tiempo actuales están bien configurados.`
+                ? `Los datos muestran que la duración promedio real (${est.media.toFixed(2)}h) es significativamente diferente de ${inf.mu0}h. Esto sugiere que los slots de tiempo predeterminados deberían ajustarse para reflejar el uso real del coworking.`
+                : `Los datos confirman que la duración promedio real (${est.media.toFixed(2)}h) no se aleja significativamente de las ${inf.mu0} horas esperadas. Los slots de tiempo actuales del sistema están bien configurados y son coherentes con el uso real del coworking.`
               }
             </p>
           </div>
