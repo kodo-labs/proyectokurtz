@@ -48,7 +48,7 @@ La idea surgió de que en el coworking donde uno de nosotros trabaja, las reserv
 
 Para el análisis estadístico nos enfocamos en la duración de las reservas como variable principal, porque nos pareció que es un dato útil para entender cómo se usa el espacio. También analizamos si hay relación entre la cantidad de usuarios conectados en un día y cuántas reservas se generan.
 
-Trabajamos con datos simulados (50 observaciones para lo descriptivo y 30 para regresión) porque el sistema todavía no tiene suficiente historial real. Los datos los generamos tratando de que reflejen patrones de uso creíbles: reuniones cortas, jornadas parciales, jornadas completas, etc. Todos los cálculos y gráficos se procesan directamente dentro del sistema BookDesk, en un módulo de estadística integrado al panel de administración.
+Trabajamos con datos simulados (50 observaciones para lo descriptivo y 30 para regresión) porque el sistema todavía no tiene suficiente historial real. Los datos los armamos tratando de que reflejen patrones de uso creíbles: reuniones cortas, jornadas parciales, jornadas completas, etc. Los cálculos los realizamos a mano aplicando las fórmulas vistas en clase, y después integramos los resultados en un módulo visual dentro de BookDesk para que el administrador pueda consultarlos.
 
 % ═══════════════════════════════════════════════════════════════════════
 \section{Recolección y organización de datos}
@@ -405,7 +405,7 @@ A partir de todo este análisis pudimos sacar varias conclusiones que impactan d
 
   \item \textbf{Detectar cambios en el uso:} El intervalo de confianza (2,77h – 3,82h) puede funcionar como una referencia. Si en el futuro el promedio de duración se sale de ese rango, puede ser señal de que algo cambió en cómo la gente usa el espacio y habría que revisar la configuración.
 
-  \item \textbf{Módulo de estadística en el sistema:} Integramos todo el análisis como una sección del panel de administración de BookDesk (ruta \texttt{/admin/estadistica}). Así el administrador puede consultar las métricas y gráficos directamente desde el sistema sin necesidad de herramientas externas.
+  \item \textbf{Módulo de estadística en el sistema:} Los resultados del análisis los cargamos en una sección del panel de administración de BookDesk (ruta \texttt{/admin/estadistica}), con gráficos y explicaciones simplificadas para que el administrador pueda consultarlos sin necesidad de saber estadística.
 \end{enumerate}
 
 % ─── CONCLUSIÓN ───
@@ -416,13 +416,13 @@ Con este trabajo pudimos ver cómo las herramientas de estadística que aprendim
 
 Lo que más nos sirvió fue darnos cuenta de que los datos respaldan decisiones que habíamos tomado de forma intuitiva al diseñar BookDesk. Por ejemplo, los slots de 3 horas no los elegimos con ningún criterio formal, pero la prueba de hipótesis muestra que efectivamente es un buen valor.
 
-También fue interesante integrar el análisis directamente en el sistema como un módulo del panel administrativo. La idea es que un administrador real pueda entrar y ver las métricas sin necesidad de saber estadística, con explicaciones claras de qué significa cada cosa.
+También estuvo bueno poder volcar los resultados en el sistema como una sección del panel administrativo. La idea es que un administrador real pueda entrar y ver las métricas sin necesidad de saber estadística, con explicaciones claras de qué significa cada cosa.
 
 \vspace{1cm}
 \noindent\textbf{Herramientas utilizadas:}
 \begin{itemize}[itemsep=4pt]
-  \item React 18 con Recharts para los cálculos estadísticos y la visualización de gráficos.
-  \item JavaScript para el procesamiento de datos y las fórmulas (media, desvío, regresión, t-Student, etc.).
+  \item Calculadora científica y planilla de cálculo para verificar los resultados.
+  \item React 18 con Recharts para la presentación visual de los resultados en el sistema.
   \item Supabase (PostgreSQL) como base de datos del sistema.
   \item Vercel para el despliegue de la aplicación.
 \end{itemize}
