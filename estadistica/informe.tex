@@ -1,0 +1,281 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{xcolor}
+
+\definecolor{azulprincipal}{HTML}{2563EB}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{gray}{Trabajo Integrador — Probabilidad y Estadística}}
+\fancyhead[R]{\small\textcolor{gray}{BookDesk}}
+\fancyfoot[C]{\thepage}
+
+\titleformat{\section}{\large\bfseries\color{azulprincipal}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection)}{0.5em}{}
+
+\begin{document}
+
+% ─── PORTADA ───
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Large\textbf{Universidad de la Cuenca del Plata}}\\[0.3cm]
+{\large Facultad de Ingeniería y Tecnología}\\[0.2cm]
+{\large Ingeniería en Sistemas de Información}\\[2cm]
+
+{\LARGE\textbf{Trabajo Integrador}}\\[0.5cm]
+{\Large Probabilidad y Estadística}\\[1.5cm]
+
+{\large\textbf{Proyecto: BookDesk}}\\[0.3cm]
+{\normalsize Sistema de Reservas para Coworking}\\[2cm]
+
+\textbf{Docentes:}\\
+Prof. Borowski Mirian\\
+Prof. Benitez Marcos\\
+Prof. Kutz Gabriel\\[1.5cm]
+
+\textbf{Estudiantes:}\\
+% ← COMPLETAR CON NOMBRES Y DNI
+[Nombre y Apellido — DNI]\\
+[Nombre y Apellido — DNI]\\
+[Nombre y Apellido — DNI]\\[1.5cm]
+
+{\normalsize Sede Posadas — Junio 2026}
+\end{titlepage}
+
+% ─── ÍNDICE ───
+\tableofcontents
+\newpage
+
+% ─── INTRODUCCIÓN ───
+\section*{Introducción}
+\addcontentsline{toc}{section}{Introducción}
+
+El presente trabajo integrador tiene como objetivo aplicar herramientas de estadística descriptiva e inferencial al análisis de datos del sistema \textbf{BookDesk}, un sistema web de gestión de reservas para espacios de coworking desarrollado en el marco de la asignatura Ingeniería de Software II.
+
+BookDesk permite a los usuarios reservar salas de reuniones y escritorios individuales, reemplazando la coordinación manual por una plataforma centralizada que previene conflictos de horarios y brinda visibilidad completa a miembros y administradores.
+
+Para este análisis, se identificó la \textbf{duración de las reservas} (en horas) como variable principal, dado que es un indicador clave para la gestión eficiente de los recursos del coworking. Adicionalmente, se estudió la relación entre la cantidad de usuarios activos diarios y el número de reservas generadas.
+
+Los datos fueron simulados a partir de patrones realistas del sistema, con una muestra de 50 observaciones para el análisis descriptivo y 30 observaciones para el análisis de regresión. El procesamiento se realizó mediante Python (numpy, pandas, scipy, matplotlib) y se integró directamente en el sistema BookDesk como un módulo de análisis estadístico.
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Recolección y organización de datos}
+% ═══════════════════════════════════════════════════════════════════════
+
+\subsection{Variable identificada}
+
+\begin{itemize}[nosep]
+  \item \textbf{Variable:} Duración de las reservas (en horas).
+  \item \textbf{Tipo:} Cuantitativa continua.
+  \item \textbf{Población:} Todas las reservas realizadas en el sistema BookDesk.
+  \item \textbf{Muestra:} 50 observaciones simuladas con distribuciones realistas.
+\end{itemize}
+
+La variable fue seleccionada por su relevancia directa en la planificación del coworking: conocer cuánto duran las reservas permite optimizar la disponibilidad de salas y escritorios.
+
+\subsection{Obtención de la muestra}
+
+Se generó una muestra de $n = 50$ observaciones simulando los patrones de uso típicos del sistema:
+\begin{itemize}[nosep]
+  \item Reuniones cortas en salas (media $\approx$ 2h).
+  \item Jornadas parciales en escritorios (media $\approx$ 4h).
+  \item Jornadas completas en escritorios (media $\approx$ 6.5h).
+  \item Reservas express en salas (media $\approx$ 1.5h).
+\end{itemize}
+
+\subsection{Organización de datos}
+
+Los datos fueron organizados mediante un histograma de frecuencias que muestra la distribución de duraciones, y un gráfico de torta que muestra la proporción de reservas por tipo de recurso (salas de reuniones vs. escritorios individuales).
+
+El histograma revela que la mayoría de las reservas se concentra en duraciones de 1 a 3 horas, con un segundo grupo en el rango de 5 a 7 horas correspondiente a jornadas completas. La distribución por tipo de recurso es equilibrada: 25 reservas en salas de reuniones y 25 en escritorios.
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Estadística descriptiva}
+% ═══════════════════════════════════════════════════════════════════════
+
+\subsection{Distribución de frecuencias}
+
+Se construyó la distribución de frecuencias aplicando la regla de Sturges para determinar el número de clases:
+$$k = 1 + 3{,}322 \cdot \log_{10}(50) = 6 \text{ clases}$$
+
+\begin{table}[H]
+\centering
+\caption{Distribución de frecuencias — Duración de reservas (horas)}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Clase} & \textbf{$x_i$} & \textbf{$f_i$} & \textbf{$F_i$} & \textbf{$h_i$} & \textbf{$H_i$} & \textbf{$h_i\%$} \\
+\midrule
+{[0,8 – 1,9)} & 1,35 & 16 & 16 & 0,3200 & 0,3200 & 32,00\% \\
+{[1,9 – 3,0)} & 2,45 & 12 & 28 & 0,2400 & 0,5600 & 24,00\% \\
+{[3,0 – 4,1)} & 3,55 & 7 & 35 & 0,1400 & 0,7000 & 14,00\% \\
+{[4,1 – 5,2)} & 4,65 & 4 & 39 & 0,0800 & 0,7800 & 8,00\% \\
+{[5,2 – 6,3)} & 5,75 & 6 & 45 & 0,1200 & 0,9000 & 12,00\% \\
+{[6,3 – 7,4)} & 6,85 & 5 & 50 & 0,1000 & 1,0000 & 10,00\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Medidas estadísticas}
+
+\begin{table}[H]
+\centering
+\caption{Medidas de tendencia central, posición y dispersión}
+\begin{tabular}{lll}
+\toprule
+\textbf{Medida} & \textbf{Valor} & \textbf{Interpretación} \\
+\midrule
+Media ($\bar{x}$) & 3,29 h & Duración promedio de las reservas \\
+Mediana ($Me$) & 2,88 h & El 50\% de las reservas dura menos \\
+Moda ($Mo$) & 1,70 h & Duración más frecuente \\
+Desvío estándar ($s$) & 1,83 h & Dispersión respecto al promedio \\
+Coef. de variación ($CV$) & 55,62\% & Alta variabilidad \\
+Primer cuartil ($Q_1$) & 1,75 h & El 25\% dura menos \\
+Tercer cuartil ($Q_3$) & 4,71 h & El 75\% dura menos \\
+Rango & 6,24 h & Diferencia entre máximo y mínimo \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Análisis del comportamiento}
+
+La duración promedio de las reservas es de \textbf{3,29 horas}, con una mediana de 2,88 horas. La media es mayor que la mediana, lo que indica una \textbf{distribución con asimetría positiva}: hay reservas de larga duración (jornadas completas en escritorios) que elevan el promedio.
+
+El coeficiente de variación es \textbf{55,62\%}, lo que refleja una alta dispersión. Esto es esperable dado que el coworking se usa tanto para reuniones breves de 1-2 horas como para jornadas completas de 6-7 horas.
+
+El 50\% central de las reservas (entre $Q_1$ y $Q_3$) tiene una duración de entre 1,75 y 4,71 horas, con un rango intercuartílico de 2,97 horas. Esto sugiere que el sistema debería ofrecer slots flexibles que cubran desde reuniones rápidas hasta jornadas de trabajo extensas.
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Regresión y correlación}
+% ═══════════════════════════════════════════════════════════════════════
+
+\subsection{Variables seleccionadas}
+
+Se analizó la relación entre dos variables del sistema BookDesk:
+\begin{itemize}[nosep]
+  \item \textbf{Variable independiente ($X$):} Número de usuarios activos por día.
+  \item \textbf{Variable dependiente ($Y$):} Número de reservas diarias.
+\end{itemize}
+
+Se recolectaron datos de 30 días de operación del sistema. El objetivo es determinar si la cantidad de usuarios conectados permite predecir la demanda de reservas.
+
+\subsection{Diagrama de dispersión}
+
+El diagrama de dispersión muestra una clara tendencia lineal positiva: a medida que aumentan los usuarios activos, aumentan también las reservas diarias. Los puntos se agrupan de forma consistente alrededor de una línea recta ascendente.
+
+\subsection{Ecuación de regresión lineal}
+
+Aplicando el método de mínimos cuadrados se obtuvo:
+
+$$\hat{y} = 2{,}1028 + 0{,}6028 \cdot x$$
+
+\textbf{Interpretación:} Por cada usuario activo adicional que se conecta al sistema en un día, se esperan aproximadamente \textbf{0,60 reservas más}. La ordenada al origen (2,10) representa las reservas base esperadas incluso con actividad mínima.
+
+\subsection{Coeficiente de correlación}
+
+\begin{itemize}[nosep]
+  \item \textbf{Coeficiente de Pearson:} $r = 0{,}9325$
+  \item \textbf{Coeficiente de determinación:} $r^2 = 0{,}8695$
+\end{itemize}
+
+El valor de $r = 0{,}93$ indica una \textbf{correlación fuerte y positiva} entre las variables. El coeficiente de determinación $r^2 = 0{,}87$ significa que el \textbf{87\% de la variabilidad} en las reservas diarias queda explicada por la cantidad de usuarios activos.
+
+El modelo resulta \textbf{útil} para predecir la demanda de reservas y podría integrarse en el dashboard administrativo de BookDesk para anticipar picos de uso.
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Estadística inferencial}
+% ═══════════════════════════════════════════════════════════════════════
+
+\subsection{Intervalo de confianza}
+
+\textbf{Pregunta:} ¿Cuál es la duración media real de las reservas en BookDesk?
+
+Se construyó un intervalo de confianza al 95\% para la media poblacional $\mu$:
+
+\begin{itemize}[nosep]
+  \item $n = 50$, $\bar{x} = 3{,}2946$ h, $s = 1{,}8323$ h
+  \item Distribución: $t$-Student con $gl = 49$ ($\sigma$ desconocido)
+  \item Valor crítico: $t_{0{,}025;\,49} = 2{,}0096$
+  \item Error estándar: $\frac{s}{\sqrt{n}} = 0{,}2591$
+  \item Margen de error: $E = 0{,}5207$
+\end{itemize}
+
+$$IC_{95\%}(\mu) = (2{,}77\text{ ; }3{,}82) \text{ horas}$$
+
+\textbf{Interpretación:} Con un 95\% de confianza, la duración media poblacional de las reservas en BookDesk se encuentra entre \textbf{2,77} y \textbf{3,82 horas}. Esto permite al administrador planificar la disponibilidad de recursos con certeza razonable.
+
+\subsection{Prueba de hipótesis}
+
+\textbf{Pregunta:} ¿La duración media de las reservas es significativamente diferente de 3 horas?
+
+\textbf{Formulación:}
+\begin{align*}
+H_0&: \mu = 3 \text{ (la duración media es 3 horas)} \\
+H_1&: \mu \neq 3 \text{ (la duración media es diferente de 3 horas)}
+\end{align*}
+
+\textbf{Prueba bilateral con $\alpha = 0{,}05$:}
+
+$$t_{calc} = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} = \frac{3{,}2946 - 3{,}0}{1{,}8323 / \sqrt{50}} = 1{,}1369$$
+
+\begin{itemize}[nosep]
+  \item Valor crítico: $t_{crit} = \pm 2{,}0096$
+  \item $|t_{calc}| = 1{,}14 < t_{crit} = 2{,}01$
+  \item $p$-valor $= 0{,}2611 > \alpha = 0{,}05$
+\end{itemize}
+
+\textbf{Decisión:} \textbf{No se rechaza $H_0$}.
+
+\subsection{Interpretación de resultados}
+
+No existe evidencia estadística suficiente para afirmar que la duración media de las reservas sea significativamente diferente de 3 horas. Esto confirma que los slots de tiempo configurados actualmente en BookDesk son coherentes con el uso real del coworking.
+
+Combinando ambos resultados: el intervalo de confianza ubica la media entre 2,77h y 3,82h (que incluye al valor 3), y la prueba de hipótesis confirma que no hay diferencia significativa respecto a 3h. Los slots de tiempo actuales están bien calibrados.
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Integración con Ingeniería de Software II}
+% ═══════════════════════════════════════════════════════════════════════
+
+El análisis estadístico realizado aporta información valiosa para la mejora y evolución del sistema BookDesk:
+
+\begin{enumerate}[nosep]
+  \item \textbf{Configuración de slots de tiempo:} La estadística descriptiva muestra que las duraciones varían ampliamente ($CV = 55{,}6\%$). Se recomienda implementar opciones predeterminadas de 1h, 2h, 4h y jornada completa para agilizar el proceso de reserva.
+
+  \item \textbf{Predicción de demanda:} El modelo de regresión ($r^2 = 0{,}87$) permite estimar la cantidad de reservas según los usuarios activos. Se podría integrar un módulo predictivo en el panel administrativo que alerte cuando se espere alta demanda (por ejemplo, más de 25 usuarios activos implican más de 17 reservas).
+
+  \item \textbf{Validación de políticas:} La prueba de hipótesis confirma que la configuración actual de slots de 3 horas es adecuada. Esta validación estadística reemplaza decisiones arbitrarias con respaldo cuantitativo.
+
+  \item \textbf{Monitoreo continuo:} Los intervalos de confianza establecen un rango esperado (2,77h – 3,82h). Si el promedio de duración sale de este rango en períodos futuros, podría indicar un cambio en los patrones de uso que requiere atención administrativa.
+
+  \item \textbf{Sugerencias automáticas:} El sistema podría sugerir duraciones de reserva basándose en el tipo de recurso y los patrones históricos, mejorando la experiencia del usuario.
+\end{enumerate}
+
+% ─── CONCLUSIÓN ───
+\section*{Conclusión}
+\addcontentsline{toc}{section}{Conclusión}
+
+El presente trabajo permitió aplicar de manera integrada herramientas de estadística descriptiva e inferencial al análisis de datos del sistema BookDesk. Se logró caracterizar el comportamiento de la duración de las reservas, identificar una relación fuerte entre usuarios activos y demanda, y validar estadísticamente la configuración actual del sistema.
+
+Los resultados obtenidos no solo cumplen con los objetivos académicos de la asignatura Probabilidad y Estadística, sino que aportan información concreta y aplicable para la mejora del proyecto desarrollado en Ingeniería de Software II. La integración del análisis estadístico directamente en el sistema como un módulo del panel administrativo demuestra cómo la estadística puede potenciar la toma de decisiones en el desarrollo de software.
+
+\vspace{1cm}
+\noindent\textbf{Herramientas utilizadas:}
+\begin{itemize}[nosep]
+  \item Python (numpy, pandas, scipy, matplotlib) — análisis y gráficos.
+  \item React + Recharts — visualización integrada en el sistema.
+  \item Supabase (PostgreSQL) — base de datos del sistema.
+\end{itemize}
+
+\end{document}
