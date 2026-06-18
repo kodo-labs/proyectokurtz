@@ -94,17 +94,17 @@ Lo primero que hicimos fue armar la tabla de distribución de frecuencias. Para 
 $$k = 1 + 3{,}322 \cdot \log_{10}(n) = 1 + 3{,}322 \cdot \log_{10}(50) = 1 + 3{,}322 \cdot 1{,}699 = 6{,}644$$
 \vspace{4pt}
 
-Redondeando, nos quedan $k = 6$ clases.
+Redondeando, nos quedan $k = 7$ clases.
 
-Después calculamos la amplitud de cada clase. El valor mínimo de la muestra es $x_{min} = 0{,}85$ h y el máximo es $x_{max} = 7{,}09$ h, así que:
+Después calculamos la amplitud de cada clase. El valor mínimo de la muestra es $x_{min} = 0{,}50$ h y el máximo es $x_{max} = 7{,}91$ h, así que:
 
 \vspace{4pt}
-$$\text{Rango} = x_{max} - x_{min} = 7{,}09 - 0{,}85 = 6{,}24 \text{ h}$$
+$$\text{Rango} = x_{max} - x_{min} = 7{,}91 - 0{,}50 = 7{,}41 \text{ h}$$
 
-$$\text{Amplitud} = \frac{\text{Rango}}{k} = \frac{6{,}24}{6} = 1{,}04 \approx 1{,}1 \text{ h}$$
+$$\text{Amplitud} = \frac{\text{Rango}}{k} = \frac{7{,}41}{7} = 1{,}059 \approx 1{,}1 \text{ h}$$
 \vspace{4pt}
 
-Arrancamos el primer intervalo en $0{,}8$ (un poco por debajo del mínimo) y con amplitud $1{,}1$ nos quedan estos intervalos:
+Arrancamos el primer intervalo en $0{,}5$ (el valor mínimo) y con amplitud $1{,}1$ nos quedan estos intervalos:
 
 \vspace{6pt}
 \begin{table}[H]
@@ -115,65 +115,66 @@ Arrancamos el primer intervalo en $0{,}8$ (un poco por debajo del mínimo) y con
 \toprule
 \textbf{Clase} & \textbf{$x_i$} & \textbf{$f_i$} & \textbf{$F_i$} & \textbf{$h_i$} & \textbf{$H_i$} & \textbf{$h_i\%$} \\
 \midrule
-{[0,8 – 1,9)} & 1,35 & 16 & 16 & 0,3200 & 0,3200 & 32,00\% \\[3pt]
-{[1,9 – 3,0)} & 2,45 & 12 & 28 & 0,2400 & 0,5600 & 24,00\% \\[3pt]
-{[3,0 – 4,1)} & 3,55 & 7 & 35 & 0,1400 & 0,7000 & 14,00\% \\[3pt]
-{[4,1 – 5,2)} & 4,65 & 4 & 39 & 0,0800 & 0,7800 & 8,00\% \\[3pt]
-{[5,2 – 6,3)} & 5,75 & 6 & 45 & 0,1200 & 0,9000 & 12,00\% \\[3pt]
-{[6,3 – 7,4)} & 6,85 & 5 & 50 & 0,1000 & 1,0000 & 10,00\% \\
+{[0,5 – 1,6)} & 1,05 & 7 & 7 & 0,1400 & 0,1400 & 14,00\% \\[3pt]
+{[1,6 – 2,7)} & 2,15 & 17 & 24 & 0,3400 & 0,4800 & 34,00\% \\[3pt]
+{[2,7 – 3,8)} & 3,25 & 6 & 30 & 0,1200 & 0,6000 & 12,00\% \\[3pt]
+{[3,8 – 4,9)} & 4,35 & 7 & 37 & 0,1400 & 0,7400 & 14,00\% \\[3pt]
+{[4,9 – 6,0)} & 5,45 & 5 & 42 & 0,1000 & 0,8400 & 10,00\% \\[3pt]
+{[6,0 – 7,1)} & 6,55 & 5 & 47 & 0,1000 & 0,9400 & 10,00\% \\[3pt]
+{[7,1 – 8,2)} & 7,65 & 3 & 50 & 0,0600 & 1,0000 & 6,00\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 \vspace{4pt}
 
-Para armar la tabla: las marcas de clase ($x_i$) son el punto medio de cada intervalo (por ejemplo, $(0{,}8 + 1{,}9)/2 = 1{,}35$). Las frecuencias relativas se calcularon como $h_i = f_i / n$ (por ejemplo, $16/50 = 0{,}32$), y las acumuladas se van sumando.
+Para armar la tabla: las marcas de clase ($x_i$) son el punto medio de cada intervalo (por ejemplo, $(0{,}5 + 1{,}6)/2 = 1{,}05$). Las frecuencias relativas se calcularon como $h_i = f_i / n$ (por ejemplo, $17/50 = 0{,}34$), y las acumuladas se van sumando.
 
-Se nota que el primer intervalo (0,8 a 1,9 horas) concentra la mayor cantidad de reservas, con un 32\%. Tiene sentido porque muchas reuniones y llamadas duran entre 1 y 2 horas.
+Se nota que el segundo intervalo (1,6 a 2,7 horas) concentra la mayor cantidad de reservas, con un 34\%. Tiene sentido porque muchas reuniones y medias jornadas duran entre 1,5 y 2,5 horas.
 
 \subsection{Medidas de tendencia central}
 
 Media aritmética: sumamos todas las duraciones y dividimos por $n$:
 
 \vspace{4pt}
-$$\bar{x} = \frac{\sum_{i=1}^{n} x_i}{n} = \frac{164{,}73}{50} = 3{,}2946 \text{ h}$$
+$$\bar{x} = \frac{\sum_{i=1}^{n} x_i}{n} = \frac{174{,}90}{50} = 3{,}4980 \text{ h}$$
 \vspace{6pt}
 
 Mediana: ordenamos las 50 observaciones de menor a mayor. Como $n = 50$ es par, la mediana es el promedio de las observaciones 25 y 26:
 
 \vspace{4pt}
-$$Me = \frac{x_{(25)} + x_{(26)}}{2} = 2{,}88 \text{ h}$$
+$$Me = \frac{x_{(25)} + x_{(26)}}{2} = 3{,}05 \text{ h}$$
 \vspace{6pt}
 
 Moda: buscamos el valor que más se repite. Redondeando a un decimal, la duración más frecuente es:
 
 \vspace{4pt}
-$$Mo = 1{,}70 \text{ h}$$
+$$Mo = 2{,}0 \text{ h}$$
 
 \subsection{Medidas de dispersión}
 
 Varianza muestral: calculamos la suma de los desvíos al cuadrado y dividimos por $n - 1$:
 
 \vspace{4pt}
-$$s^2 = \frac{\sum_{i=1}^{n}(x_i - \bar{x})^2}{n - 1} = \frac{164{,}5172}{49} = 3{,}3575$$
+$$s^2 = \frac{\sum_{i=1}^{n}(x_i - \bar{x})^2}{n - 1} = \frac{186{,}9654}{49} = 3{,}8156$$
 \vspace{6pt}
 
 Desvío estándar:
 
 \vspace{4pt}
-$$s = \sqrt{s^2} = \sqrt{3{,}3575} = 1{,}8323 \text{ h}$$
+$$s = \sqrt{s^2} = \sqrt{3{,}8156} = 1{,}9534 \text{ h}$$
 \vspace{6pt}
 
 Coeficiente de variación:
 
 \vspace{4pt}
-$$CV = \frac{s}{\bar{x}} \times 100 = \frac{1{,}8323}{3{,}2946} \times 100 = 55{,}62\%$$
+$$CV = \frac{s}{\bar{x}} \times 100 = \frac{1{,}9534}{3{,}4980} \times 100 = 55{,}84\%$$
 
 \subsection{Medidas de posición}
 
 \begin{itemize}[itemsep=6pt]
-  \item Primer cuartil: $Q_1 = 1{,}75$ h (el 25\% de las reservas dura menos que esto)
-  \item Tercer cuartil: $Q_3 = 4{,}71$ h (el 75\% dura menos que esto)
-  \item Rango intercuartílico: $RIQ = Q_3 - Q_1 = 4{,}71 - 1{,}75 = 2{,}96$ h
+  \item Primer cuartil: $Q_1 = 1{,}96$ h (el 25\% de las reservas dura menos que esto)
+  \item Tercer cuartil: $Q_3 = 5{,}17$ h (el 75\% dura menos que esto)
+  \item Rango intercuartílico: $RIQ = Q_3 - Q_1 = 5{,}17 - 1{,}96 = 3{,}21$ h
 \end{itemize}
 
 \subsection{Resumen de medidas}
@@ -186,25 +187,25 @@ $$CV = \frac{s}{\bar{x}} \times 100 = \frac{1{,}8323}{3{,}2946} \times 100 = 55{
 \toprule
 \textbf{Medida} & \textbf{Valor} & \textbf{Qué nos dice} \\
 \midrule
-Media ($\bar{x}$) & 3,29 h & El promedio de duración \\[4pt]
-Mediana ($Me$) & 2,88 h & La mitad de las reservas dura menos que esto \\[4pt]
-Moda ($Mo$) & 1,70 h & La duración que más se repite \\[4pt]
-Desvío estándar ($s$) & 1,83 h & Cuánto varían respecto al promedio \\[4pt]
-Coef. de variación ($CV$) & 55,62\% & Variabilidad alta \\[4pt]
-$Q_1$ & 1,75 h & El 25\% más corto dura menos que esto \\[4pt]
-$Q_3$ & 4,71 h & Solo el 25\% dura más que esto \\[4pt]
-Rango & 6,24 h & Diferencia entre la más larga y la más corta \\
+Media ($\bar{x}$) & 3,50 h & El promedio de duración \\[4pt]
+Mediana ($Me$) & 3,05 h & La mitad de las reservas dura menos que esto \\[4pt]
+Moda ($Mo$) & 2,0 h & La duración que más se repite \\[4pt]
+Desvío estándar ($s$) & 1,95 h & Cuánto varían respecto al promedio \\[4pt]
+Coef. de variación ($CV$) & 55,84\% & Variabilidad alta \\[4pt]
+$Q_1$ & 1,96 h & El 25\% más corto dura menos que esto \\[4pt]
+$Q_3$ & 5,17 h & Solo el 25\% dura más que esto \\[4pt]
+Rango & 7,41 h & Diferencia entre la más larga y la más corta \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsection{Análisis del comportamiento}
 
-Lo primero que notamos es que la media (3,29h) es más alta que la mediana (2,88h). Esto indica que la distribución tiene asimetría positiva, o sea que hay algunas reservas largas que ``tiran'' el promedio para arriba. Tiene lógica: la mayoría de las reservas son cortas (reuniones, llamadas), pero las jornadas completas de 6-7 horas inflan la media.
+Lo primero que notamos es que la media (3,50h) es más alta que la mediana (3,05h). Esto indica que la distribución tiene asimetría positiva, o sea que hay algunas reservas largas que ``tiran'' el promedio para arriba. Tiene lógica: la mayoría de las reservas son cortas (reuniones, llamadas), pero las jornadas completas de 6-7 horas inflan la media.
 
-El coeficiente de variación dio 55,62\%, que es bastante alto. Pero esto no es necesariamente malo para nuestro caso: es esperable que haya mucha variación porque el coworking se usa para cosas muy distintas. No es lo mismo una llamada de una hora que alguien que se sienta a trabajar todo el día.
+El coeficiente de variación dio 55,84\%, que es bastante alto. Pero esto no es necesariamente malo para nuestro caso: es esperable que haya mucha variación porque el coworking se usa para cosas muy distintas. No es lo mismo una llamada de una hora que alguien que se sienta a trabajar todo el día.
 
-Si miramos los cuartiles, el 50\% central de las reservas dura entre 1,75 y 4,71 horas. Esto nos da una idea de que el sistema debería manejar bien tanto reservas cortas como las de media jornada, que es donde cae la mayor parte del uso.
+Si miramos los cuartiles, el 50\% central de las reservas dura entre 1,96 y 5,17 horas. Esto nos da una idea de que el sistema debería manejar bien tanto reservas cortas como las de media jornada, que es donde cae la mayor parte del uso.
 
 % ═══════════════════════════════════════════════════════════════════════
 \section{Regresión y correlación}
@@ -309,7 +310,7 @@ Queríamos estimar cuál sería la duración media ``real'' de las reservas si t
 
 Datos:
 \begin{itemize}[itemsep=4pt]
-  \item $n = 50$, \quad $\bar{x} = 3{,}2946$ h, \quad $s = 1{,}8323$ h
+  \item $n = 50$, \quad $\bar{x} = 3{,}4980$ h, \quad $s = 1{,}9534$ h
   \item Nivel de confianza: $1 - \alpha = 0{,}95$ \quad $\Rightarrow$ \quad $\alpha = 0{,}05$
   \item Como no conocemos $\sigma$ poblacional, usamos la distribución $t$-Student
 \end{itemize}
@@ -324,20 +325,20 @@ $$t_{0{,}025;\,49} = 2{,}0096$$
 
 \vspace{6pt}
 \textbf{Paso 3:} Calculamos el error estándar:
-$$\hat{\sigma}_{\bar{x}} = \frac{s}{\sqrt{n}} = \frac{1{,}8323}{\sqrt{50}} = \frac{1{,}8323}{7{,}0711} = 0{,}2591$$
+$$\hat{\sigma}_{\bar{x}} = \frac{s}{\sqrt{n}} = \frac{1{,}9534}{\sqrt{50}} = \frac{1{,}9534}{7{,}0711} = 0{,}2762$$
 
 \vspace{6pt}
 \textbf{Paso 4:} Calculamos el margen de error:
-$$E = t_{\alpha/2} \cdot \hat{\sigma}_{\bar{x}} = 2{,}0096 \times 0{,}2591 = 0{,}5207$$
+$$E = t_{\alpha/2} \cdot \hat{\sigma}_{\bar{x}} = 2{,}0096 \times 0{,}2762 = 0{,}5551$$
 
 \vspace{6pt}
 \textbf{Paso 5:} Armamos el intervalo:
-$$IC = \bar{x} \pm E = 3{,}2946 \pm 0{,}5207$$
+$$IC = \bar{x} \pm E = 3{,}4980 \pm 0{,}5551$$
 
-$$\boxed{IC_{95\%}(\mu) = (2{,}77 \text{ ; } 3{,}82) \text{ horas}}$$
+$$\boxed{IC_{95\%}(\mu) = (2{,}94 \text{ ; } 4{,}05) \text{ horas}}$$
 \vspace{4pt}
 
-Podemos decir con un 95\% de confianza que la duración promedio real de las reservas está entre 2 horas 46 minutos y 3 horas 49 minutos, aproximadamente. Para el administrador esto es útil porque le da un rango confiable para planificar la rotación de espacios.
+Podemos decir con un 95\% de confianza que la duración promedio real de las reservas está entre 2 horas 56 minutos y 4 horas 3 minutos, aproximadamente. Para el administrador esto es útil porque le da un rango confiable para planificar la rotación de espacios.
 
 \subsection{Prueba de hipótesis}
 
@@ -358,7 +359,7 @@ Es una prueba bilateral (de dos colas) con $\alpha = 0{,}05$.
 Usamos el estadístico $t$ porque no conocemos $\sigma$:
 
 \vspace{4pt}
-$$t_{calc} = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} = \frac{3{,}2946 - 3{,}0}{1{,}8323 / \sqrt{50}} = \frac{0{,}2946}{0{,}2591} = 1{,}1369$$
+$$t_{calc} = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} = \frac{3{,}4980 - 3{,}0}{1{,}9534 / \sqrt{50}} = \frac{0{,}4980}{0{,}2762} = 1{,}8027$$
 
 \vspace{6pt}
 \textbf{Paso 3 — Valor crítico y regla de decisión:}
@@ -372,21 +373,21 @@ La regla es: si $|t_{calc}| > t_{crit}$, rechazamos $H_0$.
 \textbf{Paso 4 — Decisión:}
 
 Comparamos:
-$$|t_{calc}| = 1{,}14 \quad < \quad t_{crit} = 2{,}01$$
+$$|t_{calc}| = 1{,}80 \quad < \quad t_{crit} = 2{,}01$$
 
 El estadístico cae en la zona de no rechazo. También calculamos el $p$-valor:
-$$p = 0{,}2611 \quad > \quad \alpha = 0{,}05$$
+$$p = 0{,}0777 \quad > \quad \alpha = 0{,}05$$
 
 Como $p > \alpha$, no rechazamos $H_0$.
 
 \vspace{6pt}
 \textbf{Paso 5 — Conclusión:}
 
-No tenemos evidencia estadística suficiente para decir que el promedio de duración sea distinto de 3 horas. El valor observado (3,29h) está un poco por encima, pero la diferencia no es significativa al 5\%.
+No tenemos evidencia estadística suficiente para decir que el promedio de duración sea distinto de 3 horas. El valor observado (3,50h) está por encima, pero la diferencia no es significativa al 5\%.
 
 \subsection{¿Qué significan estos resultados juntos?}
 
-Los dos resultados se complementan bien: el intervalo de confianza nos dice que la media real está entre 2,77 y 3,82 horas (y el valor 3 cae dentro de ese rango), y la prueba de hipótesis confirma que no hay diferencia significativa con respecto a 3 horas. En términos prácticos, los bloques de tiempo de 3 horas que usa el sistema están bien calibrados para el uso real.
+Los dos resultados se complementan bien: el intervalo de confianza nos dice que la media real está entre 2,94 y 4,05 horas (y el valor 3 cae dentro de ese rango), y la prueba de hipótesis confirma que no hay diferencia significativa con respecto a 3 horas. En términos prácticos, los bloques de tiempo de 3 horas que usa el sistema están bien calibrados para el uso real.
 
 % ═══════════════════════════════════════════════════════════════════════
 \section{Integración con Ingeniería de Software II}
@@ -395,13 +396,13 @@ Los dos resultados se complementan bien: el intervalo de confianza nos dice que 
 A partir de todo este análisis pudimos sacar varias conclusiones que impactan directamente en el desarrollo de BookDesk:
 
 \begin{enumerate}[itemsep=10pt]
-  \item \textbf{Slots de tiempo predeterminados:} Como las duraciones varían mucho ($CV = 55{,}6\%$), tiene sentido ofrecer opciones rápidas de 1h, 2h, 4h y jornada completa en vez de que el usuario tenga que elegir la hora de inicio y fin manualmente. Eso haría más ágil la reserva.
+  \item \textbf{Slots de tiempo predeterminados:} Como las duraciones varían mucho ($CV = 55{,}8\%$), tiene sentido ofrecer opciones rápidas de 1h, 2h, 4h y jornada completa en vez de que el usuario tenga que elegir la hora de inicio y fin manualmente. Eso haría más ágil la reserva.
 
   \item \textbf{Anticipar la demanda:} El modelo de regresión con $r^2 = 0{,}87$ funciona bien para predecir reservas a partir de usuarios activos. Una idea sería agregar un indicador en el panel del administrador que muestre algo como ``hoy se esperan aproximadamente X reservas'' basándose en los usuarios que ya se conectaron.
 
   \item \textbf{Validar decisiones de diseño:} La prueba de hipótesis nos sirvió para confirmar algo que habíamos asumido al diseñar el sistema: que 3 horas es un buen valor por defecto para los bloques. Ahora tenemos un respaldo estadístico en vez de una suposición.
 
-  \item \textbf{Detectar cambios en el uso:} El intervalo de confianza (2,77h – 3,82h) puede funcionar como una referencia. Si en el futuro el promedio de duración se sale de ese rango, puede ser señal de que algo cambió en cómo la gente usa el espacio y habría que revisar la configuración.
+  \item \textbf{Detectar cambios en el uso:} El intervalo de confianza (2,94h – 4,05h) puede funcionar como una referencia. Si en el futuro el promedio de duración se sale de ese rango, puede ser señal de que algo cambió en cómo la gente usa el espacio y habría que revisar la configuración.
 
   \item \textbf{Módulo de estadística en el sistema:} Los resultados del análisis los cargamos en una sección del panel de administración de BookDesk (ruta \texttt{/admin/estadistica}), con gráficos y explicaciones simplificadas para que el administrador pueda consultarlos sin necesidad de saber estadística.
 \end{enumerate}
