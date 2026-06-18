@@ -48,7 +48,7 @@ La idea surgió de que en el coworking donde uno de nosotros trabaja, las reserv
 
 Para el análisis estadístico nos enfocamos en la duración de las reservas como variable principal, porque nos pareció que es un dato útil para entender cómo se usa el espacio. También analizamos si hay relación entre la cantidad de usuarios conectados en un día y cuántas reservas se generan.
 
-Trabajamos con datos simulados (50 observaciones para lo descriptivo y 30 para regresión) porque el sistema todavía no tiene suficiente historial real. Los datos los generamos con Python tratando de que reflejen patrones de uso creíbles: reuniones cortas, jornadas parciales, jornadas completas, etc.
+Trabajamos con datos simulados (50 observaciones para lo descriptivo y 30 para regresión) porque el sistema todavía no tiene suficiente historial real. Los datos los generamos tratando de que reflejen patrones de uso creíbles: reuniones cortas, jornadas parciales, jornadas completas, etc. Todos los cálculos y gráficos se procesan directamente dentro del sistema BookDesk, en un módulo de estadística integrado al panel de administración.
 
 % ═══════════════════════════════════════════════════════════════════════
 \section{Recolección y organización de datos}
@@ -76,7 +76,7 @@ Generamos una muestra de $n = 50$ reservas simulando los distintos tipos de uso 
   \item Reservas rápidas de salas para llamadas o entrevistas (1 a 1,5 horas).
 \end{itemize}
 
-Usamos semillas fijas en el generador aleatorio para que los resultados sean reproducibles.
+Usamos semillas fijas en el generador de datos para que los resultados sean reproducibles cada vez que se accede al módulo.
 
 \subsection{Organización de datos}
 
@@ -421,9 +421,9 @@ También fue interesante integrar el análisis directamente en el sistema como u
 \vspace{1cm}
 \noindent\textbf{Herramientas utilizadas:}
 \begin{itemize}[itemsep=4pt]
-  \item Python (numpy, pandas, scipy, matplotlib) para el análisis y los gráficos.
-  \item React 18 con Recharts para la visualización en el sistema web.
-  \item Supabase (PostgreSQL) como base de datos.
+  \item React 18 con Recharts para los cálculos estadísticos y la visualización de gráficos.
+  \item JavaScript para el procesamiento de datos y las fórmulas (media, desvío, regresión, t-Student, etc.).
+  \item Supabase (PostgreSQL) como base de datos del sistema.
   \item Vercel para el despliegue de la aplicación.
 \end{itemize}
 
