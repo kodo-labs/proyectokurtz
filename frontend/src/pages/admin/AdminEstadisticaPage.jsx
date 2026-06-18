@@ -511,7 +511,7 @@ export default function AdminEstadisticaPage() {
 
           <Insight>
             <p>La interpolación permite al administrador <b>estimar la demanda</b> en escenarios que no ocurrieron en el período analizado. Por ejemplo, si un día se conectan <b>{puntosInterpolados[0]?.x} usuarios</b>, el sistema puede anticipar aproximadamente <b>{puntosInterpolados[0]?.y} reservas</b>.</p>
-            <p>Estos valores no están en los datos originales, pero el modelo matemático permite <b>predecirlos con un {(reg.r2 * 100).toFixed(0)}% de confiabilidad</b>, lo que facilita la planificación de recursos del coworking.</p>
+            <p>Estos valores no están en los datos originales, pero el modelo matemático permite <b>estimarlos mediante interpolación</b>, lo que facilita la planificación de recursos del coworking.</p>
           </Insight>
 
           <Desarrollo>
@@ -528,9 +528,9 @@ export default function AdminEstadisticaPage() {
                 <p>Este valor no está en los datos originales — es un punto hallado mediante interpolación.</p>
               </Paso>
             ))}
-            <Paso numero={puntosInterpolados.length + 2} titulo="Validez del modelo">
-              <p>El coeficiente de determinación r² = {reg.r2.toFixed(4)} indica que el modelo explica el <b>{(reg.r2 * 100).toFixed(2)}%</b> de la variabilidad.</p>
-              <p>Las predicciones son válidas dentro del rango observado ({Math.min(...puntosInterpolados.map(p => p.x))} a {Math.max(...puntosInterpolados.map(p => p.x))} usuarios). Fuera de ese rango sería extrapolación, que tiene menor confiabilidad.</p>
+            <Paso numero={puntosInterpolados.length + 2} titulo="Validez de la interpolación">
+              <p>Los puntos interpolados se encuentran dentro del rango de datos observados ({Math.min(...puntosInterpolados.map(p => p.x))} a {Math.max(...puntosInterpolados.map(p => p.x))} usuarios), por lo tanto la estimación es confiable.</p>
+              <p>Si se quisiera estimar para valores fuera de ese rango, ya no sería interpolación sino <b>extrapolación</b>, que tiene menor precisión.</p>
             </Paso>
           </Desarrollo>
         </Card>
