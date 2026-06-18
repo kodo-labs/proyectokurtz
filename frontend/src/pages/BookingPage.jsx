@@ -22,6 +22,7 @@ export default function BookingPage() {
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedStart, setSelectedStart] = useState(null)
   const [selectedEnd, setSelectedEnd] = useState(null)
+  const [duration, setDuration] = useState(1.0)
   const [showModal, setShowModal] = useState(false)
   const [success, setSuccess] = useState(null)
 
@@ -31,13 +32,36 @@ export default function BookingPage() {
     ? resources
     : resources.filter(r => r.type === resourceType)
 
+  const DURATION_OPTIONS = []
+  for (let d = 0.5; d <= 8; d += 0.25) {
+    const hours = Math.floor(d)
+    const mins = Math.round((d - hours) * 60)
+    let label
+    if (hours === 0) label = `${mins} min`
+    else if (mins === 0) label = `${hours}h`
+    else label = `${hours}h ${mins}min`
+    DURATION_OPTIONS.push({ value: d, label })
+  }
+
+  function calcEndTime(startTime, dur) {
+    const [h, m] = startTime.split(':').map(Number)
+    const totalMin = h * 60 + m + dur * 60
+    const endH = Math.floor(totalMin / 60)
+    const endM = totalMin % 60
+    return `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`
+  }
+
   function handleSlotClick(date, startTime) {
-    const startHour = parseInt(startTime.split(':')[0])
-    const endHour = startHour + 1
-    const endTime = `${String(endHour).padStart(2, '0')}:00`
     setSelectedDate(date)
     setSelectedStart(startTime)
-    setSelectedEnd(endTime)
+    setSelectedEnd(calcEndTime(startTime, duration))
+  }
+
+  function handleDurationChange(newDur) {
+    setDuration(newDur)
+    if (selectedStart) {
+      setSelectedEnd(calcEndTime(selectedStart, newDur))
+    }
   }
 
   async function handleConfirm(title) {
@@ -216,6 +240,19 @@ export default function BookingPage() {
               </div>
             </div>
 
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Duración de la reserva</label>
+              <select
+                value={duration}
+                onChange={e => handleDurationChange(parseFloat(e.target.value))}
+                className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white"
+              >
+                {DURATION_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="bg-white rounded-xl border border-gray-200 p-5 mb-4">
               <WeeklyCalendar
                 resourceId={selectedResourceId}
@@ -228,7 +265,7 @@ export default function BookingPage() {
             {selectedDate && selectedStart && (
               <div className="flex items-center gap-4">
                 <div className="flex-1 bg-brand-50 border border-brand-200 rounded-lg px-4 py-3 text-sm text-brand-800">
-                  Seleccionaste: <strong>{selectedDate.slice(8)}/04</strong> de <strong>{selectedStart}</strong> a <strong>{selectedEnd}</strong>
+                  Seleccionaste: <strong>{selectedDate.slice(8)}/04</strong> de <strong>{selectedStart}</strong> a <strong>{selectedEnd}</strong> ({DURATION_OPTIONS.find(o => o.value === duration)?.label})
                 </div>
                 <button
                   onClick={() => setShowModal(true)}

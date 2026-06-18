@@ -35,7 +35,7 @@ function generarDatos() {
     for (let i = 0; i < c.n; i++) {
       let d = normalRandom(rand, c.mean, c.std)
       d = Math.max(0.5, Math.min(8.0, d))
-      duraciones.push(Math.round(d * 100) / 100)
+      duraciones.push(Math.round(d * 4) / 4)
       tipos.push(c.tipo)
     }
   }
