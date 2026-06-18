@@ -38,16 +38,6 @@
 
 \begin{document}
 
-% ─── INTRODUCCIÓN ───
-\section*{Introducción}
-\addcontentsline{toc}{section}{Introducción}
-
-En este trabajo aplicamos métodos de Análisis Numérico al proyecto que venimos desarrollando en Ingeniería de Software II: BookDesk, una plataforma web para gestionar reservas de salas y escritorios en un espacio de coworking. El sistema fue planteado por el profesor de la materia como trabajo práctico grupal.
-
-El objetivo es utilizar técnicas de interpolación lineal para construir un modelo matemático que permita predecir el comportamiento del sistema. En particular, nos interesa poder estimar cuántas reservas se van a generar en un día a partir de la cantidad de usuarios activos, incluso para valores que no aparecen en los datos que tenemos registrados.
-
-Trabajamos con datos de $n = 30$ días de actividad del sistema. A partir de esos datos construimos un diagrama de dispersión, ajustamos un modelo lineal por mínimos cuadrados, y lo usamos para interpolar puntos que no están representados en la muestra original.
-
 % ═══════════════════════════════════════════════════════════════════════
 \section{Selección de variables y diagrama de dispersión}
 % ═══════════════════════════════════════════════════════════════════════
