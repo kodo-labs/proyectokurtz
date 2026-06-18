@@ -1,0 +1,296 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{setspace}
+
+\definecolor{azulprincipal}{HTML}{2563EB}
+
+% Interlineado 1.4
+\setstretch{1.4}
+
+% Espacio entre párrafos
+\setlength{\parskip}{8pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\thepage}
+
+% Más espacio antes y después de secciones
+\titleformat{\section}{\Large\bfseries\color{azulprincipal}}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{28pt}{14pt}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection)}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{20pt}{10pt}
+
+\begin{document}
+
+% ─── INTRODUCCIÓN ───
+\section*{Introducción}
+\addcontentsline{toc}{section}{Introducción}
+
+En este trabajo aplicamos métodos de Análisis Numérico al proyecto que venimos desarrollando en Ingeniería de Software II: BookDesk, una plataforma web para gestionar reservas de salas y escritorios en un espacio de coworking. El sistema fue planteado por el profesor de la materia como trabajo práctico grupal.
+
+El objetivo es utilizar técnicas de interpolación lineal para construir un modelo matemático que permita predecir el comportamiento del sistema. En particular, nos interesa poder estimar cuántas reservas se van a generar en un día a partir de la cantidad de usuarios activos, incluso para valores que no aparecen en los datos que tenemos registrados.
+
+Trabajamos con datos de $n = 30$ días de actividad del sistema. A partir de esos datos construimos un diagrama de dispersión, ajustamos un modelo lineal por mínimos cuadrados, y lo usamos para interpolar puntos que no están representados en la muestra original.
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Selección de variables y diagrama de dispersión}
+% ═══════════════════════════════════════════════════════════════════════
+
+\subsection{Variables seleccionadas}
+
+Identificamos dos variables del sistema que tienen una relación directa:
+
+\begin{itemize}[itemsep=4pt]
+  \item $x$: Cantidad de usuarios activos por día (variable independiente).
+  \item $y$: Cantidad de reservas generadas ese día (variable dependiente).
+\end{itemize}
+
+La idea es sencilla: si un día se conectan más usuarios al sistema, es esperable que se generen más reservas. Queríamos verificar si esta relación se sostiene con los datos y cuantificarla con un modelo.
+
+\subsection{Datos recopilados}
+
+Recopilamos datos de 30 días de actividad del sistema. La tabla completa de valores es:
+
+\vspace{6pt}
+\begin{table}[H]
+\centering
+\caption{Datos de usuarios activos ($x$) y reservas diarias ($y$) — 30 días}
+\vspace{4pt}
+\begin{tabular}{c|cccccccccc}
+\toprule
+\textbf{Día} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\
+\midrule
+$x_i$ & 5 & 5 & 6 & 7 & 8 & 8 & 8 & 12 & 13 & 15 \\
+$y_i$ & 3 & 4 & 6 & 7 & 6 & 9 & 8 & 12 & 11 & 10 \\
+\bottomrule
+\end{tabular}
+
+\vspace{8pt}
+
+\begin{tabular}{c|cccccccccc}
+\toprule
+\textbf{Día} & 11 & 12 & 13 & 14 & 15 & 16 & 17 & 18 & 19 & 20 \\
+\midrule
+$x_i$ & 15 & 16 & 16 & 17 & 17 & 17 & 18 & 18 & 19 & 19 \\
+$y_i$ & 10 & 10 & 10 & 11 & 13 & 16 & 11 & 16 & 15 & 15 \\
+\bottomrule
+\end{tabular}
+
+\vspace{8pt}
+
+\begin{tabular}{c|cccccccccc}
+\toprule
+\textbf{Día} & 21 & 22 & 23 & 24 & 25 & 26 & 27 & 28 & 29 & 30 \\
+\midrule
+$x_i$ & 20 & 22 & 22 & 24 & 26 & 26 & 29 & 29 & 33 & 33 \\
+$y_i$ & 16 & 17 & 16 & 17 & 19 & 20 & 21 & 23 & 24 & 24 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Diagrama de dispersión}
+
+Al graficar los 30 puntos $(x_i, y_i)$ en un plano cartesiano, se observa una tendencia claramente ascendente: a medida que aumentan los usuarios activos, aumentan las reservas. Los puntos no están dispersos al azar sino que siguen una dirección lineal definida, lo que nos habilita a ajustar un modelo de interpolación lineal.
+
+El diagrama de dispersión se puede consultar en el módulo de estadística del sistema BookDesk (ruta \texttt{/admin/estadistica}).
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Modelo de interpolación lineal}
+% ═══════════════════════════════════════════════════════════════════════
+
+\subsection{Tabla de sumatorias}
+
+Para construir el modelo necesitamos calcular las siguientes sumatorias a partir de los 30 pares de datos:
+
+\vspace{6pt}
+\begin{table}[H]
+\centering
+\caption{Sumatorias necesarias para el modelo ($n = 30$)}
+\vspace{4pt}
+\begin{tabular}{lr}
+\toprule
+\textbf{Sumatoria} & \textbf{Valor} \\
+\midrule
+$\sum_{i=1}^{n} x_i$ & 523 \\[4pt]
+$\sum_{i=1}^{n} y_i$ & 400 \\[4pt]
+$\sum_{i=1}^{n} x_i \cdot y_i$ & 8.275 \\[4pt]
+$\sum_{i=1}^{n} x_i^2$ & 10.995 \\[4pt]
+$\sum_{i=1}^{n} y_i^2$ & 6.302 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\vspace{4pt}
+
+Calculamos las medias:
+
+\vspace{4pt}
+$$\bar{x} = \frac{\sum x_i}{n} = \frac{523}{30} = 17{,}4333 \qquad \bar{y} = \frac{\sum y_i}{n} = \frac{400}{30} = 13{,}3333$$
+
+\subsection{Cálculo de la pendiente (m)}
+
+La pendiente del modelo lineal se obtiene con la fórmula de mínimos cuadrados:
+
+\vspace{4pt}
+$$m = \frac{\sum_{i=1}^{n} x_i y_i - n \cdot \bar{x} \cdot \bar{y}}{\sum_{i=1}^{n} x_i^2 - n \cdot \bar{x}^2}$$
+\vspace{4pt}
+
+El numerador representa la covarianza entre las variables:
+
+$$\text{Numerador} = \sum x_i y_i - n \cdot \bar{x} \cdot \bar{y} = 8275 - 30 \times 17{,}4333 \times 13{,}3333 = 1301{,}6667$$
+
+El denominador representa la varianza de $x$:
+
+$$\text{Denominador} = \sum x_i^2 - n \cdot \bar{x}^2 = 10995 - 30 \times 17{,}4333^2 = 1877{,}3667$$
+
+Entonces:
+
+$$m = \frac{1301{,}6667}{1877{,}3667} = 0{,}6934$$
+
+\subsection{Cálculo de la ordenada al origen (b)}
+
+\vspace{4pt}
+$$b = \bar{y} - m \cdot \bar{x} = 13{,}3333 - 0{,}6934 \times 17{,}4333 = 1{,}2459$$
+
+\subsection{Modelo obtenido}
+
+La ecuación del modelo de interpolación lineal es:
+
+\vspace{4pt}
+$$\boxed{\hat{y} = 0{,}6934 \cdot x + 1{,}2459}$$
+\vspace{4pt}
+
+Esto significa que por cada usuario activo adicional que se conecta al sistema, se esperan aproximadamente 0,69 reservas más en ese día. El término independiente (1,25) representa un nivel base de reservas que se generan independientemente de la cantidad de usuarios (por ejemplo, reservas programadas con anticipación).
+
+\subsection{Coeficiente de correlación}
+
+Para validar la calidad del modelo, calculamos el coeficiente de correlación de Pearson:
+
+\vspace{4pt}
+$$r = \frac{\sum x_i y_i - n \cdot \bar{x} \cdot \bar{y}}{\sqrt{\left(\sum x_i^2 - n \cdot \bar{x}^2\right) \cdot \left(\sum y_i^2 - n \cdot \bar{y}^2\right)}}$$
+\vspace{4pt}
+
+$$r = \frac{1301{,}6667}{\sqrt{1877{,}3667 \times 968{,}6933}} = \frac{1301{,}6667}{1348{,}5646} = 0{,}9652$$
+
+\vspace{4pt}
+
+Y el coeficiente de determinación:
+
+$$r^2 = (0{,}9652)^2 = 0{,}9317$$
+
+El valor de $r = 0{,}97$ indica una correlación positiva muy fuerte, y el $r^2 = 0{,}93$ nos dice que el modelo explica el 93\% de la variación en los datos. El ajuste es muy bueno, lo que valida el uso de este modelo para hacer interpolaciones.
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Predicción del comportamiento del sistema}
+% ═══════════════════════════════════════════════════════════════════════
+
+El modelo obtenido permite predecir la cantidad de reservas para cualquier cantidad de usuarios activos dentro del rango observado (5 a 33 usuarios). Esto es útil para el administrador del coworking porque puede anticipar la demanda del día.
+
+Algunos ejemplos de predicción con el modelo $\hat{y} = 0{,}6934x + 1{,}2459$:
+
+\vspace{6pt}
+\begin{table}[H]
+\centering
+\caption{Predicciones del modelo para distintas cantidades de usuarios}
+\vspace{4pt}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Usuarios activos ($x$)} & \textbf{Cálculo} & \textbf{Reservas estimadas ($\hat{y}$)} \\
+\midrule
+10 & $0{,}6934 \times 10 + 1{,}2459$ & 8,18 \\[4pt]
+15 & $0{,}6934 \times 15 + 1{,}2459$ & 11,65 \\[4pt]
+20 & $0{,}6934 \times 20 + 1{,}2459$ & 15,11 \\[4pt]
+25 & $0{,}6934 \times 25 + 1{,}2459$ & 18,58 \\[4pt]
+30 & $0{,}6934 \times 30 + 1{,}2459$ & 22,05 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\vspace{4pt}
+
+El modelo muestra un comportamiento coherente: la relación es proporcional y los valores estimados son razonables para un coworking. Con 10 usuarios se esperan unas 8 reservas, con 20 unas 15, y con 30 unas 22.
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Interpolación de puntos no representados}
+% ═══════════════════════════════════════════════════════════════════════
+
+Una de las ventajas del modelo es que permite hallar valores para puntos que no están en los datos originales. En los 30 días registrados, no hubo ningún día con exactamente 10, 25 o 31 usuarios activos. Sin embargo, el modelo nos permite estimar cuántas reservas se habrían generado en esos escenarios.
+
+\subsection{Punto 1: $x = 10$ usuarios}
+
+\vspace{4pt}
+$$\hat{y} = 0{,}6934 \times 10 + 1{,}2459 = 6{,}934 + 1{,}2459 = 8{,}18 \text{ reservas}$$
+\vspace{4pt}
+
+Si un día se conectan 10 usuarios, el modelo estima que se generarán aproximadamente 8 reservas. Este valor no existe en los datos originales (no hubo ningún día con exactamente 10 usuarios activos), pero el modelo permite estimarlo.
+
+\subsection{Punto 2: $x = 25$ usuarios}
+
+\vspace{4pt}
+$$\hat{y} = 0{,}6934 \times 25 + 1{,}2459 = 17{,}335 + 1{,}2459 = 18{,}58 \text{ reservas}$$
+\vspace{4pt}
+
+Para 25 usuarios activos se estiman aproximadamente 19 reservas. Tampoco hubo un día con exactamente 25 usuarios en el registro.
+
+\subsection{Punto 3: $x = 31$ usuarios}
+
+\vspace{4pt}
+$$\hat{y} = 0{,}6934 \times 31 + 1{,}2459 = 21{,}4954 + 1{,}2459 = 22{,}74 \text{ reservas}$$
+\vspace{4pt}
+
+Con 31 usuarios activos, el modelo predice alrededor de 23 reservas. Este es un valor intermedio entre los datos registrados para 29 y 33 usuarios.
+
+\subsection{Validez de la interpolación}
+
+Los tres puntos calculados se encuentran dentro del rango de datos observados ($5 \leq x \leq 33$), por lo tanto se trata de interpolación y las estimaciones son confiables. Si quisiéramos estimar para valores fuera de ese rango (por ejemplo, $x = 50$ usuarios), ya estaríamos haciendo extrapolación, que tiene menor precisión porque no sabemos si la relación lineal se mantiene fuera del rango observado.
+
+% ═══════════════════════════════════════════════════════════════════════
+\section{Aplicación al sistema BookDesk}
+% ═══════════════════════════════════════════════════════════════════════
+
+El modelo de interpolación tiene aplicaciones concretas en el funcionamiento del sistema:
+
+\begin{enumerate}[itemsep=10pt]
+  \item \textbf{Anticipar la demanda diaria:} Si al comienzo del día el sistema detecta cierta cantidad de usuarios conectados, puede usar el modelo para estimar cuántas reservas se van a generar y alertar al administrador si se espera un día de alta demanda.
+
+  \item \textbf{Planificar recursos:} Sabiendo que con más de 25 usuarios se esperan más de 18 reservas, el administrador puede decidir habilitar espacios adicionales o ajustar la disponibilidad.
+
+  \item \textbf{Estimar escenarios hipotéticos:} Gracias a la interpolación, se pueden evaluar situaciones que todavía no ocurrieron. Por ejemplo, si el coworking planea una campaña para atraer nuevos usuarios, puede estimar cuántas reservas se generarían con 30 o 35 usuarios activos.
+
+  \item \textbf{Visualización integrada:} Los resultados del modelo están integrados en el módulo de estadística del panel de administración de BookDesk (ruta \texttt{/admin/estadistica}), donde el administrador puede ver el diagrama de dispersión, la recta de regresión, y las predicciones de forma visual e interactiva.
+\end{enumerate}
+
+% ─── CONCLUSIÓN ───
+\section*{Conclusión}
+\addcontentsline{toc}{section}{Conclusión}
+
+A partir de los datos del sistema BookDesk pudimos construir un modelo de interpolación lineal que relaciona la cantidad de usuarios activos con las reservas diarias. El modelo $\hat{y} = 0{,}6934x + 1{,}2459$ tiene un coeficiente de correlación de $r = 0{,}97$ y explica el 93\% de la variabilidad en los datos, lo que indica un ajuste muy bueno.
+
+El modelo nos permitió cumplir con las cuatro consignas planteadas: seleccionamos dos variables del sistema y construimos el diagrama de dispersión, ajustamos un modelo lineal por mínimos cuadrados, lo utilizamos para predecir el comportamiento del sistema ante distintos escenarios, y hallamos puntos que no estaban representados en los datos originales mediante interpolación.
+
+Lo más valioso fue poder integrar los resultados directamente en el sistema. El administrador del coworking puede consultar las predicciones desde el panel de BookDesk sin necesidad de hacer cálculos manuales, lo que demuestra cómo los métodos numéricos pueden aplicarse en un contexto real de ingeniería de software.
+
+\vspace{1cm}
+\noindent\textbf{Herramientas utilizadas:}
+\begin{itemize}[itemsep=4pt]
+  \item Calculadora científica para los cálculos.
+  \item React 18 con Recharts (librería de gráficos) para el diagrama de dispersión, la recta de regresión y las visualizaciones en el sistema.
+  \item Supabase (PostgreSQL) como base de datos del sistema.
+  \item Vercel para el despliegue de la aplicación.
+\end{itemize}
+
+\end{document}
