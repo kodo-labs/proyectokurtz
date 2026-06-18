@@ -15,8 +15,15 @@
 \usepackage{fancyhdr}
 \usepackage{titlesec}
 \usepackage{xcolor}
+\usepackage{setspace}
 
 \definecolor{azulprincipal}{HTML}{2563EB}
+
+% Interlineado 1.4
+\setstretch{1.4}
+
+% Espacio entre párrafos
+\setlength{\parskip}{8pt}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -24,8 +31,11 @@
 \fancyhead[R]{\small\textcolor{gray}{BookDesk}}
 \fancyfoot[C]{\thepage}
 
-\titleformat{\section}{\large\bfseries\color{azulprincipal}}{\thesection.}{0.5em}{}
-\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection)}{0.5em}{}
+% Más espacio antes y después de secciones
+\titleformat{\section}{\Large\bfseries\color{azulprincipal}}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{28pt}{14pt}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection)}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{20pt}{10pt}
 
 \begin{document}
 
@@ -47,7 +57,7 @@ Trabajamos con datos simulados (50 observaciones para lo descriptivo y 30 para r
 
 \subsection{Variable identificada}
 
-\begin{itemize}[nosep]
+\begin{itemize}[itemsep=4pt]
   \item \textbf{Variable:} Duración de las reservas (en horas).
   \item \textbf{Tipo:} Cuantitativa continua.
   \item \textbf{Población:} Todas las reservas que se hagan en BookDesk.
@@ -59,7 +69,8 @@ Elegimos esta variable porque tiene impacto directo en cómo se administra el co
 \subsection{Obtención de la muestra}
 
 Generamos una muestra de $n = 50$ reservas simulando los distintos tipos de uso que esperamos en el sistema:
-\begin{itemize}[nosep]
+
+\begin{itemize}[itemsep=4pt]
   \item Reuniones cortas en salas (alrededor de 2 horas).
   \item Medias jornadas en escritorios (unas 4 horas).
   \item Jornadas completas en escritorios (entre 6 y 7 horas).
@@ -82,34 +93,41 @@ Lo que se ve en el histograma es que la mayoría de las reservas caen en el rang
 
 Lo primero que hicimos fue armar la tabla de distribución de frecuencias. Para determinar el número de clases usamos la regla de Sturges:
 
+\vspace{4pt}
 $$k = 1 + 3{,}322 \cdot \log_{10}(n) = 1 + 3{,}322 \cdot \log_{10}(50) = 1 + 3{,}322 \cdot 1{,}699 = 6{,}644$$
+\vspace{4pt}
 
 Redondeando, nos quedan $k = 6$ clases.
 
 Después calculamos la amplitud de cada clase. El valor mínimo de la muestra es $x_{min} = 0{,}85$ h y el máximo es $x_{max} = 7{,}09$ h, así que:
 
+\vspace{4pt}
 $$\text{Rango} = x_{max} - x_{min} = 7{,}09 - 0{,}85 = 6{,}24 \text{ h}$$
 
 $$\text{Amplitud} = \frac{\text{Rango}}{k} = \frac{6{,}24}{6} = 1{,}04 \approx 1{,}1 \text{ h}$$
+\vspace{4pt}
 
 Arrancamos el primer intervalo en $0{,}8$ (un poco por debajo del mínimo) y con amplitud $1{,}1$ nos quedan estos intervalos:
 
+\vspace{6pt}
 \begin{table}[H]
 \centering
 \caption{Distribución de frecuencias — Duración de reservas (horas)}
+\vspace{4pt}
 \begin{tabular}{lcccccc}
 \toprule
 \textbf{Clase} & \textbf{$x_i$} & \textbf{$f_i$} & \textbf{$F_i$} & \textbf{$h_i$} & \textbf{$H_i$} & \textbf{$h_i\%$} \\
 \midrule
-{[0,8 – 1,9)} & 1,35 & 16 & 16 & 0,3200 & 0,3200 & 32,00\% \\
-{[1,9 – 3,0)} & 2,45 & 12 & 28 & 0,2400 & 0,5600 & 24,00\% \\
-{[3,0 – 4,1)} & 3,55 & 7 & 35 & 0,1400 & 0,7000 & 14,00\% \\
-{[4,1 – 5,2)} & 4,65 & 4 & 39 & 0,0800 & 0,7800 & 8,00\% \\
-{[5,2 – 6,3)} & 5,75 & 6 & 45 & 0,1200 & 0,9000 & 12,00\% \\
+{[0,8 – 1,9)} & 1,35 & 16 & 16 & 0,3200 & 0,3200 & 32,00\% \\[3pt]
+{[1,9 – 3,0)} & 2,45 & 12 & 28 & 0,2400 & 0,5600 & 24,00\% \\[3pt]
+{[3,0 – 4,1)} & 3,55 & 7 & 35 & 0,1400 & 0,7000 & 14,00\% \\[3pt]
+{[4,1 – 5,2)} & 4,65 & 4 & 39 & 0,0800 & 0,7800 & 8,00\% \\[3pt]
+{[5,2 – 6,3)} & 5,75 & 6 & 45 & 0,1200 & 0,9000 & 12,00\% \\[3pt]
 {[6,3 – 7,4)} & 6,85 & 5 & 50 & 0,1000 & 1,0000 & 10,00\% \\
 \bottomrule
 \end{tabular}
 \end{table}
+\vspace{4pt}
 
 Para armar la tabla: las marcas de clase ($x_i$) son el punto medio de cada intervalo (por ejemplo, $(0{,}8 + 1{,}9)/2 = 1{,}35$). Las frecuencias relativas se calcularon como $h_i = f_i / n$ (por ejemplo, $16/50 = 0{,}32$), y las acumuladas se van sumando.
 
@@ -119,33 +137,43 @@ Se nota que el primer intervalo (0,8 a 1,9 horas) concentra la mayor cantidad de
 
 \textbf{Media aritmética:} sumamos todas las duraciones y dividimos por $n$:
 
+\vspace{4pt}
 $$\bar{x} = \frac{\sum_{i=1}^{n} x_i}{n} = \frac{164{,}73}{50} = 3{,}2946 \text{ h}$$
+\vspace{6pt}
 
 \textbf{Mediana:} ordenamos las 50 observaciones de menor a mayor. Como $n = 50$ es par, la mediana es el promedio de las observaciones 25 y 26:
 
+\vspace{4pt}
 $$Me = \frac{x_{(25)} + x_{(26)}}{2} = 2{,}88 \text{ h}$$
+\vspace{6pt}
 
 \textbf{Moda:} buscamos el valor que más se repite. Redondeando a un decimal, la duración más frecuente es:
 
+\vspace{4pt}
 $$Mo = 1{,}70 \text{ h}$$
 
 \subsection{Medidas de dispersión}
 
 \textbf{Varianza muestral:} calculamos la suma de los desvíos al cuadrado y dividimos por $n - 1$:
 
+\vspace{4pt}
 $$s^2 = \frac{\sum_{i=1}^{n}(x_i - \bar{x})^2}{n - 1} = \frac{164{,}5172}{49} = 3{,}3575$$
+\vspace{6pt}
 
 \textbf{Desvío estándar:}
 
+\vspace{4pt}
 $$s = \sqrt{s^2} = \sqrt{3{,}3575} = 1{,}8323 \text{ h}$$
+\vspace{6pt}
 
 \textbf{Coeficiente de variación:}
 
+\vspace{4pt}
 $$CV = \frac{s}{\bar{x}} \times 100 = \frac{1{,}8323}{3{,}2946} \times 100 = 55{,}62\%$$
 
 \subsection{Medidas de posición}
 
-\begin{itemize}[nosep]
+\begin{itemize}[itemsep=6pt]
   \item Primer cuartil: $Q_1 = 1{,}75$ h (el 25\% de las reservas dura menos que esto)
   \item Tercer cuartil: $Q_3 = 4{,}71$ h (el 75\% dura menos que esto)
   \item Rango intercuartílico: $RIQ = Q_3 - Q_1 = 4{,}71 - 1{,}75 = 2{,}96$ h
@@ -156,17 +184,18 @@ $$CV = \frac{s}{\bar{x}} \times 100 = \frac{1{,}8323}{3{,}2946} \times 100 = 55{
 \begin{table}[H]
 \centering
 \caption{Resumen de medidas estadísticas}
+\vspace{4pt}
 \begin{tabular}{lll}
 \toprule
 \textbf{Medida} & \textbf{Valor} & \textbf{Qué nos dice} \\
 \midrule
-Media ($\bar{x}$) & 3,29 h & El promedio de duración \\
-Mediana ($Me$) & 2,88 h & La mitad de las reservas dura menos que esto \\
-Moda ($Mo$) & 1,70 h & La duración que más se repite \\
-Desvío estándar ($s$) & 1,83 h & Cuánto varían respecto al promedio \\
-Coef. de variación ($CV$) & 55,62\% & Variabilidad alta \\
-$Q_1$ & 1,75 h & El 25\% más corto dura menos que esto \\
-$Q_3$ & 4,71 h & Solo el 25\% dura más que esto \\
+Media ($\bar{x}$) & 3,29 h & El promedio de duración \\[4pt]
+Mediana ($Me$) & 2,88 h & La mitad de las reservas dura menos que esto \\[4pt]
+Moda ($Mo$) & 1,70 h & La duración que más se repite \\[4pt]
+Desvío estándar ($s$) & 1,83 h & Cuánto varían respecto al promedio \\[4pt]
+Coef. de variación ($CV$) & 55,62\% & Variabilidad alta \\[4pt]
+$Q_1$ & 1,75 h & El 25\% más corto dura menos que esto \\[4pt]
+$Q_3$ & 4,71 h & Solo el 25\% dura más que esto \\[4pt]
 Rango & 6,24 h & Diferencia entre la más larga y la más corta \\
 \bottomrule
 \end{tabular}
@@ -187,7 +216,8 @@ Si miramos los cuartiles, el 50\% central de las reservas dura entre 1,75 y 4,71
 \subsection{Variables seleccionadas}
 
 Acá quisimos ver si hay relación entre cuántos usuarios se conectan al sistema en un día y cuántas reservas se generan ese mismo día:
-\begin{itemize}[nosep]
+
+\begin{itemize}[itemsep=4pt]
   \item \textbf{$X$:} Usuarios activos por día.
   \item \textbf{$Y$:} Reservas diarias.
 \end{itemize}
@@ -202,27 +232,34 @@ Al graficar los puntos se ve una tendencia clara: a más usuarios, más reservas
 
 Primero calculamos las sumatorias que vamos a necesitar para la regresión y la correlación:
 
+\vspace{6pt}
 \begin{table}[H]
 \centering
 \caption{Sumatorias para regresión y correlación ($n = 30$)}
+\vspace{4pt}
 \begin{tabular}{lr}
 \toprule
 \textbf{Sumatoria} & \textbf{Valor} \\
 \midrule
-$\sum x_i$ & 617 \\
-$\sum y_i$ & 435 \\
-$\sum x_i \cdot y_i$ & 10.394 \\
-$\sum x_i^2$ & 15.091 \\
+$\sum x_i$ & 617 \\[4pt]
+$\sum y_i$ & 435 \\[4pt]
+$\sum x_i \cdot y_i$ & 10.394 \\[4pt]
+$\sum x_i^2$ & 15.091 \\[4pt]
 $\sum y_i^2$ & 7.311 \\
 \bottomrule
 \end{tabular}
 \end{table}
+\vspace{4pt}
 
 Con eso sacamos las medias:
+
+\vspace{4pt}
 $$\bar{x} = \frac{\sum x_i}{n} = \frac{617}{30} = 20{,}5667 \qquad \bar{y} = \frac{\sum y_i}{n} = \frac{435}{30} = 14{,}5000$$
+\vspace{4pt}
 
 Y las sumas de cuadrados y productos cruzados:
 
+\vspace{4pt}
 $$S_{xy} = \sum x_i y_i - n \cdot \bar{x} \cdot \bar{y} = 10394 - 30 \times 20{,}5667 \times 14{,}5 = 1447{,}50$$
 
 $$S_{xx} = \sum x_i^2 - n \cdot \bar{x}^2 = 15091 - 30 \times 20{,}5667^2 = 2401{,}37$$
@@ -233,13 +270,17 @@ $$S_{yy} = \sum y_i^2 - n \cdot \bar{y}^2 = 7311 - 30 \times 14{,}5^2 = 1003{,}5
 
 Con las sumatorias anteriores calculamos la pendiente y la ordenada al origen por mínimos cuadrados:
 
+\vspace{4pt}
 $$b_1 = \frac{S_{xy}}{S_{xx}} = \frac{1447{,}50}{2401{,}37} = 0{,}6028$$
 
 $$b_0 = \bar{y} - b_1 \cdot \bar{x} = 14{,}50 - 0{,}6028 \times 20{,}5667 = 2{,}1028$$
+\vspace{4pt}
 
 La ecuación de la recta queda:
 
+\vspace{4pt}
 $$\boxed{\hat{y} = 2{,}1028 + 0{,}6028 \cdot x}$$
+\vspace{4pt}
 
 Esto quiere decir que por cada usuario activo más que se conecta en un día, se esperan aproximadamente 0,60 reservas adicionales. El término independiente (2,10) representaría una especie de ``piso'' de reservas que se hacen incluso con muy pocos usuarios, probablemente los que ya tienen reservas programadas de antes.
 
@@ -247,11 +288,15 @@ Esto quiere decir que por cada usuario activo más que se conecta en un día, se
 
 Calculamos el coeficiente de Pearson con los valores que ya teníamos:
 
+\vspace{4pt}
 $$r = \frac{S_{xy}}{\sqrt{S_{xx} \cdot S_{yy}}} = \frac{1447{,}50}{\sqrt{2401{,}37 \times 1003{,}50}} = \frac{1447{,}50}{1552{,}21} = 0{,}9325$$
+\vspace{4pt}
 
 Y el coeficiente de determinación:
 
+\vspace{4pt}
 $$r^2 = (0{,}9325)^2 = 0{,}8695$$
+\vspace{4pt}
 
 El $r$ de 0,93 es alto, lo que confirma que la relación entre usuarios activos y reservas es fuerte y positiva. Y el $r^2$ nos dice que el 87\% de la variación en las reservas se puede explicar por la cantidad de usuarios. Es un modelo que funciona bastante bien.
 
@@ -266,28 +311,34 @@ En la práctica, esto podría servir para que el administrador del coworking ant
 Queríamos estimar cuál sería la duración media ``real'' de las reservas si tuviéramos datos de toda la población (no solo nuestra muestra de 50). Para eso armamos un intervalo de confianza al 95\%.
 
 \textbf{Datos:}
-\begin{itemize}[nosep]
+\begin{itemize}[itemsep=4pt]
   \item $n = 50$, \quad $\bar{x} = 3{,}2946$ h, \quad $s = 1{,}8323$ h
   \item Nivel de confianza: $1 - \alpha = 0{,}95$ \quad $\Rightarrow$ \quad $\alpha = 0{,}05$
   \item Como no conocemos $\sigma$ poblacional, usamos la distribución $t$-Student
 \end{itemize}
 
+\vspace{6pt}
 \textbf{Paso 1:} Grados de libertad:
 $$gl = n - 1 = 50 - 1 = 49$$
 
+\vspace{6pt}
 \textbf{Paso 2:} Buscamos el valor crítico $t_{\alpha/2;\,gl}$ en la tabla de $t$-Student:
 $$t_{0{,}025;\,49} = 2{,}0096$$
 
+\vspace{6pt}
 \textbf{Paso 3:} Calculamos el error estándar:
 $$\hat{\sigma}_{\bar{x}} = \frac{s}{\sqrt{n}} = \frac{1{,}8323}{\sqrt{50}} = \frac{1{,}8323}{7{,}0711} = 0{,}2591$$
 
+\vspace{6pt}
 \textbf{Paso 4:} Calculamos el margen de error:
 $$E = t_{\alpha/2} \cdot \hat{\sigma}_{\bar{x}} = 2{,}0096 \times 0{,}2591 = 0{,}5207$$
 
+\vspace{6pt}
 \textbf{Paso 5:} Armamos el intervalo:
 $$IC = \bar{x} \pm E = 3{,}2946 \pm 0{,}5207$$
 
 $$\boxed{IC_{95\%}(\mu) = (2{,}77 \text{ ; } 3{,}82) \text{ horas}}$$
+\vspace{4pt}
 
 Podemos decir con un 95\% de confianza que la duración promedio real de las reservas está entre 2 horas 46 minutos y 3 horas 49 minutos, aproximadamente. Para el administrador esto es útil porque le da un rango confiable para planificar la rotación de espacios.
 
@@ -295,6 +346,7 @@ Podemos decir con un 95\% de confianza que la duración promedio real de las res
 
 También nos preguntamos: ¿la duración promedio es distinta de 3 horas? Tres horas es un valor de referencia razonable (muchos coworkings configuran sus slots en bloques de 3h), así que planteamos:
 
+\vspace{6pt}
 \textbf{Paso 1 — Hipótesis:}
 \begin{align*}
 H_0&: \mu = 3 \text{ horas (la duración media es 3 horas)} \\
@@ -303,12 +355,15 @@ H_1&: \mu \neq 3 \text{ horas (la duración media es diferente de 3 horas)}
 
 Es una prueba bilateral (de dos colas) con $\alpha = 0{,}05$.
 
+\vspace{6pt}
 \textbf{Paso 2 — Estadístico de prueba:}
 
 Usamos el estadístico $t$ porque no conocemos $\sigma$:
 
+\vspace{4pt}
 $$t_{calc} = \frac{\bar{x} - \mu_0}{s / \sqrt{n}} = \frac{3{,}2946 - 3{,}0}{1{,}8323 / \sqrt{50}} = \frac{0{,}2946}{0{,}2591} = 1{,}1369$$
 
+\vspace{6pt}
 \textbf{Paso 3 — Valor crítico y regla de decisión:}
 
 Con $gl = 49$ y $\alpha/2 = 0{,}025$:
@@ -316,6 +371,7 @@ $$t_{crit} = \pm 2{,}0096$$
 
 La regla es: si $|t_{calc}| > t_{crit}$, rechazamos $H_0$.
 
+\vspace{6pt}
 \textbf{Paso 4 — Decisión:}
 
 Comparamos:
@@ -326,6 +382,7 @@ $$p = 0{,}2611 \quad > \quad \alpha = 0{,}05$$
 
 Como $p > \alpha$, \textbf{no rechazamos $H_0$}.
 
+\vspace{6pt}
 \textbf{Paso 5 — Conclusión:}
 
 No tenemos evidencia estadística suficiente para decir que el promedio de duración sea distinto de 3 horas. El valor observado (3,29h) está un poco por encima, pero la diferencia no es significativa al 5\%.
@@ -340,7 +397,7 @@ Los dos resultados se complementan bien: el intervalo de confianza nos dice que 
 
 A partir de todo este análisis pudimos sacar varias conclusiones que impactan directamente en el desarrollo de BookDesk:
 
-\begin{enumerate}[nosep]
+\begin{enumerate}[itemsep=10pt]
   \item \textbf{Slots de tiempo predeterminados:} Como las duraciones varían mucho ($CV = 55{,}6\%$), tiene sentido ofrecer opciones rápidas de 1h, 2h, 4h y jornada completa en vez de que el usuario tenga que elegir la hora de inicio y fin manualmente. Eso haría más ágil la reserva.
 
   \item \textbf{Anticipar la demanda:} El modelo de regresión con $r^2 = 0{,}87$ funciona bien para predecir reservas a partir de usuarios activos. Una idea sería agregar un indicador en el panel del administrador que muestre algo como ``hoy se esperan aproximadamente X reservas'' basándose en los usuarios que ya se conectaron.
@@ -364,7 +421,7 @@ También fue interesante integrar el análisis directamente en el sistema como u
 
 \vspace{1cm}
 \noindent\textbf{Herramientas utilizadas:}
-\begin{itemize}[nosep]
+\begin{itemize}[itemsep=4pt]
   \item Python (numpy, pandas, scipy, matplotlib) para el análisis y los gráficos.
   \item React 18 con Recharts para la visualización en el sistema web.
   \item Supabase (PostgreSQL) como base de datos.
