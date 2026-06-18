@@ -1,370 +1,226 @@
-# Guía completa del módulo de Análisis Estadístico de BookDesk
+# Qué decir en cada sección de la página de Análisis Estadístico de BookDesk
 
-## Contexto del proyecto
+BookDesk es un sistema de reservas para un coworking. El módulo de estadística analiza 50 reservas del sistema para encontrar patrones de uso. La página está en /estadistica.
 
-BookDesk es un sistema de reservas para un coworking desarrollado como proyecto integrador para las materias Probabilidad y Estadística, Análisis Numérico e Ingeniería de Software II de la carrera Ingeniería en Sistemas de Información de la Universidad de la Cuenca del Plata.
-
-El sistema permite a los usuarios reservar salas de reuniones y escritorios individuales. Las reservas se hacen en bloques de 15 minutos (mínimo 0.5 horas, máximo 8 horas). El módulo de estadística analiza los patrones de uso del coworking para ayudar al administrador a tomar decisiones basadas en datos.
-
-El módulo está disponible en la ruta /estadistica de la aplicación web desplegada en Vercel.
-
-La aplicación fue desarrollada con React 18, Vite, Tailwind CSS y Recharts para los gráficos. El backend usa Supabase (PostgreSQL).
+Se analizan dos cosas: la duración de las reservas (50 reservas) y la relación entre usuarios activos y reservas por día (30 días). Las reservas se hacen en bloques de 15 minutos, mínimo media hora y máximo 8 horas.
 
 ---
 
-## Generación de los datos
+## Sección 1: Las 4 tarjetas de arriba (Resumen General)
 
-Los datos se generan de forma simulada pero reproducible usando un generador de números pseudoaleatorios con semilla fija (seed = 42). Esto significa que cada vez que se carga la página, los datos son exactamente los mismos. La fórmula del generador es un generador congruencial lineal: s = (s × 16807) mod 2147483647, y el valor aleatorio se obtiene como (s - 1) / 2147483646.
+Acá se ven 4 indicadores:
+- Reservas analizadas: 50. Es el tamaño de la muestra. Se usan 50 porque supera el mínimo de 30 que pide el Teorema Central del Límite para poder hacer inferencia estadística después.
+- Duración promedio: 3.5 horas. Es la media aritmética de las 50 duraciones.
+- Reserva más corta: 0.5 horas (media hora).
+- Reserva más larga: 8.0 horas (jornada completa).
 
-Para generar datos con distribución normal se usa la transformada de Box-Muller: z = sqrt(-2 × ln(u1)) × cos(2π × u2), donde u1 y u2 son valores uniformes del generador.
-
-Se generan 50 reservas con 4 configuraciones diferentes:
-- 20 reservas de Sala de Reuniones con media 2.0 horas y desvío 0.6
-- 15 reservas de Escritorio con media 4.0 horas y desvío 1.0
-- 10 reservas de Escritorio con media 6.5 horas y desvío 0.8
-- 5 reservas de Sala de Reuniones con media 1.5 horas y desvío 0.3
-
-Cada duración se acota al rango [0.5, 8.0] horas y se redondea al múltiplo de 0.25 más cercano (Math.round(d × 4) / 4) para que sea coherente con el sistema de reservas real que permite reservar en bloques de 15 minutos.
-
-El resultado son 25 reservas de Sala de Reuniones y 25 de Escritorio.
-
-Además se generan datos para 30 días de operación del coworking, con dos variables por día: cantidad de usuarios activos (x) y cantidad de reservas realizadas (y). Los usuarios se generan con una distribución uniforme entre 5 y 35, y las reservas siguen una relación lineal con ruido: r = 0.6 × usuarios + ruido_normal(0, 2) + 3.
+Debajo hay un desplegable donde se pueden ver las 50 reservas individuales con su tipo de recurso (sala o escritorio) y duración.
 
 ---
 
-## Sección 1: Resumen General
+## Sección 2: ¿Cuánto duran las reservas? (Histograma y Torta)
 
-Son 4 tarjetas con los indicadores principales:
+### El histograma (gráfico de barras)
 
-- Reservas analizadas: 50 (tamaño de la muestra)
-- Duración promedio: 3.5 h (media aritmética)
-- Reserva más corta: 0.5 h (valor mínimo)
-- Reserva más larga: 8.0 h (valor máximo)
+Muestra cómo se distribuyen las duraciones agrupadas en intervalos.
 
-El tamaño de muestra n = 50 se eligió porque supera el umbral de 30 que exige el Teorema Central del Límite. Con n mayor a 30, la distribución de la media muestral se aproxima a una distribución normal sin importar la distribución original de los datos. Esto nos habilita a usar la distribución t de Student para construir intervalos de confianza y hacer pruebas de hipótesis.
+Para construirlo se usó la Regla de Sturges para determinar cuántas clases usar:
+- k = 1 + 3.322 × log10(50) = 6.64, que se redondea a 7 clases.
+- El rango es 8.00 - 0.50 = 7.50 horas.
+- La amplitud de cada clase es 7.50 / 7 = 1.1 horas aproximadamente.
 
-Debajo de estas cards hay un desplegable que muestra los 50 datos crudos: número de reserva, tipo de recurso (Sala de Reuniones o Escritorio) y duración en horas. Al final del desplegable se listan los 50 valores ordenados de menor a mayor.
+La tabla de frecuencias queda así:
 
----
+| Intervalo | Frecuencia |
+|-----------|------------|
+| 0.5 a 1.6h | 7 |
+| 1.6 a 2.7h | 17 |
+| 2.7 a 3.8h | 8 |
+| 3.8 a 4.9h | 5 |
+| 4.9 a 6.0h | 4 |
+| 6.0 a 7.1h | 7 |
+| 7.1 a 8.2h | 2 |
+| Total | 50 |
 
-## Sección 2: ¿Cuánto duran las reservas? (Distribución de duraciones)
+La barra más alta es la de 1.6 a 2.7 horas con 17 reservas. Son las reuniones cortas en salas. Hay un segundo grupo importante en 6 a 7 horas que son las jornadas completas en escritorios. La distribución está sesgada a la derecha: hay más reservas cortas que largas.
 
-Esta sección tiene dos gráficos: un histograma y un gráfico de torta (pie chart).
+### El gráfico de torta
 
-### Histograma
-
-El histograma agrupa las 50 duraciones en clases (intervalos) y muestra cuántas reservas caen en cada intervalo. Es la forma estándar de visualizar la distribución de una variable cuantitativa continua.
-
-Para construirlo se sigue este procedimiento:
-
-Paso 1 — Determinar la cantidad de clases usando la Regla de Sturges:
-k = 1 + 3.322 × log10(n)
-k = 1 + 3.322 × log10(50)
-k = 1 + 3.322 × 1.6990
-k = 6.64
-Redondeando hacia arriba: k = 7 clases
-
-Paso 2 — Calcular el rango y la amplitud:
-Rango = Valor máximo - Valor mínimo = 8.00 - 0.50 = 7.50
-Amplitud = Rango / k = 7.50 / 7 = 1.07, que se redondea a 1.1
-
-Paso 3 — Construir la tabla de frecuencias partiendo desde 0.5:
-
-| Clase | Intervalo | Frecuencia absoluta (fi) |
-|-------|-----------|--------------------------|
-| 1 | [0.5 - 1.6) | 7 |
-| 2 | [1.6 - 2.7) | 17 |
-| 3 | [2.7 - 3.8) | 8 |
-| 4 | [3.8 - 4.9) | 5 |
-| 5 | [4.9 - 6.0) | 4 |
-| 6 | [6.0 - 7.1) | 7 |
-| 7 | [7.1 - 8.2] | 2 |
-| Total | | 50 |
-
-Los intervalos son cerrados a la izquierda y abiertos a la derecha [li, ls), excepto el último que incluye el valor máximo.
-
-Interpretación del histograma:
-La clase con mayor frecuencia es [1.6 - 2.7) con 17 reservas. Esto corresponde a reuniones cortas en salas de reuniones. La distribución es asimétrica positiva (sesgada a la derecha): hay una concentración de reservas cortas y una cola hacia la derecha con reservas largas (jornadas completas en escritorios). Se observa un segundo pico en la clase [6.0 - 7.1) con 7 reservas, que corresponde a jornadas completas de trabajo en escritorios.
-
-### Gráfico de torta (Pie Chart)
-
-Muestra la distribución por tipo de recurso:
-- Salas de Reuniones: 25 reservas (50%)
-- Escritorios: 25 reservas (50%)
-
-El uso está balanceado entre ambos tipos de recurso. Esto es coherente con la configuración de los datos: 20 + 5 = 25 reservas de sala, y 15 + 10 = 25 reservas de escritorio.
+Muestra que hay 25 reservas de salas de reuniones y 25 de escritorios. El uso está balanceado entre ambos tipos de recurso.
 
 ---
 
 ## Sección 3: Métricas clave de duración (Estadística descriptiva)
 
-Esta sección presenta 4 indicadores resumidos y luego un desarrollo paso a paso con todos los cálculos.
+Hay 4 tarjetas y un desplegable con todos los cálculos.
 
-### Media aritmética (Promedio)
+### Promedio: 3.50 horas
 
-Fórmula: x̄ = Σxi / n
+La media aritmética. Se suman todas las duraciones (175 horas en total) y se divide por 50.
+- Fórmula: x̄ = Σxi / n = 175.00 / 50 = 3.5000 horas.
 
-Se suman todas las duraciones:
-Σxi = 175.00
+### Mediana: 3.00 horas
 
-Se divide por el total:
-x̄ = 175.00 / 50 = 3.5000 horas
+Es el valor central cuando se ordenan los 50 datos de menor a mayor. Como 50 es par, se promedian los valores en las posiciones 25 y 26.
+- La mediana es menor que la media. Eso indica que hay reservas largas que tiran el promedio hacia arriba. La distribución está sesgada a la derecha.
 
-La media es el centro de gravedad de los datos. Cada reserva contribuye proporcionalmente al promedio.
+### Moda: 2.0 horas
 
-### Mediana (Valor central)
+Es el valor que más se repite. Las reservas de 2 horas son las más comunes porque corresponden a reuniones típicas en salas.
 
-Se ordenan los 50 datos de menor a mayor. Como n = 50 es par, la mediana es el promedio de los valores en las posiciones 25 y 26.
+### Variabilidad: 56% (Coeficiente de Variación)
 
-Me = (x(25) + x(26)) / 2 = 3.00 horas
+Mide cuánta dispersión hay en los datos respecto al promedio.
 
-La mediana es 3.00, que es menor que la media (3.50). Esto indica que la distribución está sesgada a la derecha: hay reservas largas (jornadas completas en escritorios) que elevan el promedio por encima del valor central. La mediana es más robusta que la media frente a valores extremos.
+Primero se calcula la varianza: S² = Σ(xi - x̄)² / (n - 1) = 3.8597. Se divide por n-1 = 49 y no por n = 50 porque es la corrección de Bessel, que se usa cuando trabajamos con una muestra en lugar de la población completa.
 
-### Moda (Valor más frecuente)
+Después el desvío estándar: S = √3.8597 = 1.9646 horas.
 
-La moda es el valor que más se repite en los datos. El valor 2.0 horas es el que tiene mayor frecuencia absoluta. Tiene sentido porque las reuniones de 2 horas son las más comunes en un coworking (la configuración principal genera 20 reservas con media 2.0).
+Y el coeficiente de variación: CV = (1.9646 / 3.5000) × 100 = 56.13%.
 
-### Varianza y Desvío estándar
+Un CV mayor a 30% indica alta dispersión. El 56% es alto pero esperable: en el coworking conviven reuniones cortas de 1-2 horas con jornadas completas de 6-8 horas, entonces es lógico que haya mucha variabilidad.
 
-Se usa la corrección de Bessel (dividir por n-1 en lugar de n) porque estamos trabajando con una muestra, no con la población completa. Dividir por n-1 da una estimación insesgada de la varianza poblacional.
+### Cuartiles (en el desplegable)
 
-Fórmula de la varianza muestral:
-S² = Σ(xi - x̄)² / (n - 1)
+- Q1 = 2.00 horas: el 25% de las reservas dura menos de 2 horas.
+- Q3 = 5.25 horas: el 75% de las reservas dura menos de 5.25 horas.
+- IQR = Q3 - Q1 = 3.25 horas: el 50% central de los datos se concentra en un rango de 3.25 horas.
 
-Se calcula la suma de los desvíos cuadrados respecto a la media y se divide por n - 1 = 49.
-
-S² = 3.8597
-
-Desvío estándar:
-S = √S² = √3.8597 = 1.9646 horas
-
-El desvío estándar indica que las duraciones se dispersan en promedio 1.96 horas respecto al promedio de 3.50 horas.
-
-### Coeficiente de Variación (CV)
-
-Fórmula: CV = (S / x̄) × 100
-
-CV = (1.9646 / 3.5000) × 100 = 56.13%
-
-Un CV mayor a 30% indica alta dispersión. En nuestro caso el CV es 56%, lo cual es esperable porque tenemos dos tipos de uso muy diferentes: reuniones cortas en salas (1-3 horas) y jornadas completas en escritorios (5-8 horas). Si todos los usuarios usaran el coworking de la misma manera, el CV sería más bajo.
-
-### Cuartiles
-
-Q1 (percentil 25) = 2.00 horas — El 25% de las reservas dura menos de 2 horas.
-Q3 (percentil 75) = 5.25 horas — El 75% de las reservas dura menos de 5.25 horas.
-
-Rango intercuartil:
-IQR = Q3 - Q1 = 5.25 - 2.00 = 3.25 horas
-
-El IQR indica que el 50% central de los datos se concentra en un rango de 3.25 horas (entre 2.00 y 5.25 horas). Es una medida de dispersión más robusta que el rango porque no se ve afectada por valores extremos.
-
-### Resumen de todas las medidas descriptivas
+### Tabla resumen de valores
 
 | Medida | Valor |
 |--------|-------|
-| n (tamaño de muestra) | 50 |
+| n | 50 |
 | Suma total | 175.00 h |
-| Media (x̄) | 3.5000 h |
-| Mediana (Me) | 3.00 h |
-| Moda (Mo) | 2.0 h |
-| Varianza (S²) | 3.8597 |
-| Desvío estándar (S) | 1.9646 h |
-| Coeficiente de variación (CV) | 56.13% |
+| Media | 3.5000 h |
+| Mediana | 3.00 h |
+| Moda | 2.0 h |
+| Varianza | 3.8597 |
+| Desvío estándar | 1.9646 h |
+| CV | 56.13% |
 | Mínimo | 0.50 h |
 | Máximo | 8.00 h |
 | Rango | 7.50 h |
 | Q1 | 2.00 h |
 | Q3 | 5.25 h |
-| IQR | 3.25 h |
 
 ---
 
-## Sección 4: ¿Más usuarios = más reservas? (Regresión lineal y correlación)
+## Sección 4: ¿Más usuarios = más reservas? (Regresión y correlación)
 
-Esta sección usa un conjunto de datos diferente: 30 días de operación del coworking, donde para cada día se registra la cantidad de usuarios activos (variable x) y la cantidad de reservas realizadas (variable y).
+Acá se usan datos diferentes: 30 días de operación del coworking. Para cada día se tienen dos variables: cantidad de usuarios activos ese día (x) y cantidad de reservas que se hicieron (y). El objetivo es ver si hay una relación entre ambas.
 
-Los 30 datos se eligieron porque 30 es el mínimo clásico para que los resultados de regresión lineal y el coeficiente de Pearson tengan validez estadística.
+### El diagrama de dispersión
 
-### Diagrama de dispersión
+Cada punto azul es un día. La posición horizontal es la cantidad de usuarios y la vertical es la cantidad de reservas. Se ve una tendencia ascendente clara: los días con más usuarios tienen más reservas.
 
-El gráfico principal muestra solo los puntos azules (datos reales). Cada punto es un día: la posición horizontal indica cuántos usuarios se conectaron ese día, y la posición vertical indica cuántas reservas se hicieron.
+Se ven 26 puntos en lugar de 30 porque hay 4 pares de días que tienen exactamente los mismos valores y se superponen visualmente.
 
-Se observa una tendencia claramente ascendente: los días con más usuarios tienen más reservas. Esto sugiere una correlación positiva.
+### Cálculo de la recta de regresión
 
-Nota: hay 30 puntos en total pero se ven 26 porque hay 4 pares de puntos con coordenadas idénticas que se superponen visualmente. Los pares superpuestos son: (15, 10), (16, 10), (19, 15) y (33, 24).
+Se ajusta una recta ŷ = mx + b por mínimos cuadrados. Las sumatorias con los 30 datos son:
+- Σx = 523, Σy = 400, Σxy = 8275, Σx² = 10995, Σy² = 6302
+- Medias: x̄ = 17.43, ȳ = 13.33
 
-### Cálculo de la recta de regresión por mínimos cuadrados
+La pendiente se calcula con la fórmula:
+m = (Σxy - n · x̄ · ȳ) / (Σx² - n · x̄²)
+m = (8275 - 30 × 17.43 × 13.33) / (10995 - 30 × 17.43²)
+m = 1301.67 / 1877.37
+m = 0.6934
 
-Se usa el método de mínimos cuadrados para ajustar una recta y = mx + b que minimice la suma de los errores cuadrados entre los valores reales y los valores estimados por la recta.
+La pendiente de 0.69 significa que por cada usuario activo adicional se generan aproximadamente 0.7 reservas más en el día.
 
-Paso 1 — Tabla de sumatorias (n = 30 días):
+La ordenada al origen:
+b = ȳ - m · x̄ = 13.33 - 0.6934 × 17.43 = 1.2459
 
-| Sumatoria | Valor |
-|-----------|-------|
-| Σxi | 523 |
-| Σyi | 400 |
-| Σxi·yi | 8275 |
-| Σxi² | 10995 |
-| Σyi² | 6302 |
+La ecuación del modelo es: ŷ = 0.6934x + 1.2459
 
-Medias:
-x̄ = Σxi / n = 523 / 30 = 17.4333
-ȳ = Σyi / n = 400 / 30 = 13.3333
+### Coeficiente de correlación de Pearson
 
-Paso 2 — Cálculo de la pendiente (m):
+r = (Σxy - n · x̄ · ȳ) / √[(Σx² - n · x̄²) · (Σy² - n · ȳ²)]
+r = 1301.67 / √(1877.37 × 968.69)
+r = 1301.67 / 1348.56
+r = 0.9652
 
-Fórmula: m = (Σxi·yi - n · x̄ · ȳ) / (Σxi² - n · x̄²)
+Un valor de r cercano a 1 indica una correlación positiva muy fuerte. 0.97 es excelente.
 
-Numerador (covarianza):
-Σxi·yi - n · x̄ · ȳ = 8275 - 30 × 17.4333 × 13.3333 = 1301.6667
-
-Denominador (varianza de x):
-Σxi² - n · x̄² = 10995 - 30 × 17.4333² = 1877.3667
-
-m = 1301.6667 / 1877.3667 = 0.6934
-
-La pendiente de 0.6934 significa que por cada usuario activo adicional que se conecta al sistema, se esperan aproximadamente 0.69 reservas más ese día.
-
-Paso 3 — Cálculo de la ordenada al origen (b):
-
-Fórmula: b = ȳ - m · x̄
-
-b = 13.3333 - 0.6934 × 17.4333 = 1.2459
-
-La ordenada al origen de 1.2459 representa un nivel base de reservas que se generan independientemente de la cantidad de usuarios (por ejemplo, reservas programadas con anticipación).
-
-Ecuación del modelo: ŷ = 0.6934x + 1.2459
-
-Paso 4 — Coeficiente de correlación de Pearson (r):
-
-Fórmula: r = (Σxi·yi - n · x̄ · ȳ) / √[(Σxi² - n · x̄²) · (Σyi² - n · ȳ²)]
-
-Numerador = 1301.6667
-
-Denominador:
-Σyi² - n · ȳ² = 6302 - 30 × 13.3333² = 968.6933
-√(1877.3667 × 968.6933) = √1818028.6 = 1348.5646
-
-r = 1301.6667 / 1348.5646 = 0.9652
-
-El coeficiente de Pearson r va de -1 a 1. Un valor de 0.9652 indica una correlación positiva muy fuerte. Los valores están muy cerca de la recta.
-
-Paso 5 — Coeficiente de determinación (r²):
+### Coeficiente de determinación
 
 r² = 0.9652² = 0.9317
 
-El r² de 0.9317 significa que el 93.17% de la variabilidad en las reservas queda explicada por la cantidad de usuarios activos. Solo el 6.83% se debe a otros factores no medidos.
+El 93% de la variabilidad en las reservas se explica por la cantidad de usuarios activos. Solo el 7% se debe a otros factores.
 
-En el desplegable "Ver desarrollo paso a paso" se muestra un segundo gráfico que superpone la recta de regresión (línea roja) sobre los puntos del diagrama de dispersión, para visualizar el ajuste del modelo.
-
-### Cards de resumen:
+### Las 3 tarjetas de resumen
 - Correlación: 97% (relación fuerte y positiva)
-- Precisión del modelo: 93% (de la variación queda explicada)
+- Precisión del modelo: 93% (porcentaje de la variación que explica el modelo)
 - Por cada usuario más: +0.7 reservas (impacto estimado por día)
 
----
-
-## Sección 5: Predicción de reservas por interpolación (Análisis Numérico)
-
-Esta sección conecta con la materia Análisis Numérico. Se usa la recta de regresión como función de interpolación para estimar valores de reservas para cantidades de usuarios que no están en los datos originales.
-
-### ¿Qué es la interpolación?
-
-Interpolación es estimar valores intermedios dentro del rango de datos observados. Se diferencia de la extrapolación, que estima valores fuera del rango observado y es menos confiable.
-
-En nuestro caso, los datos van de 5 a 33 usuarios. Cualquier estimación para un valor de x entre 5 y 33 que no esté en los datos originales es interpolación. Si estimáramos para x = 50, sería extrapolación.
-
-### ¿Por qué usar mínimos cuadrados como método de interpolación?
-
-Mínimos cuadrados es un método numérico de ajuste de curvas. A diferencia de métodos como Lagrange o Newton, que generan un polinomio que pasa exactamente por cada punto de datos, mínimos cuadrados busca la función que mejor se aproxima al conjunto de datos minimizando la suma de los errores cuadrados. Es más adecuado cuando los datos tienen ruido o variabilidad natural, como en nuestro caso (no todos los días con la misma cantidad de usuarios tienen la misma cantidad de reservas).
-
-### Modelo utilizado
-
-ŷ = 0.6934x + 1.2459
-
-Donde x es la cantidad de usuarios activos y ŷ es la estimación de reservas.
-
-### Puntos interpolados
-
-El sistema selecciona automáticamente 3 valores de x que no aparecen en los datos originales (valores enteros de usuarios que no se registraron en ningún día) y calcula el valor estimado de y para cada uno.
-
-Para cada punto, el cálculo es simplemente reemplazar x en la ecuación:
-
-Ejemplo con x = 10 usuarios:
-ŷ = 0.6934 × 10 + 1.2459 = 6.934 + 1.2459 = 8.18 reservas
-
-Ejemplo con x = 25 usuarios:
-ŷ = 0.6934 × 25 + 1.2459 = 17.335 + 1.2459 = 18.58 reservas
-
-Estos valores no existen en los datos originales — son puntos hallados mediante interpolación.
-
-### Validez de la interpolación
-
-Los puntos interpolados se encuentran dentro del rango de datos observados (5 a 33 usuarios), por lo tanto la estimación es confiable. Si se quisiera estimar para valores fuera de ese rango (por ejemplo, 50 usuarios), ya no sería interpolación sino extrapolación, que tiene menor precisión porque no sabemos si la relación lineal se mantiene fuera del rango observado.
-
-### Aplicación práctica
-
-La interpolación permite al administrador del coworking estimar la demanda en escenarios que no ocurrieron en el período analizado. Por ejemplo, si un día se conectan 10 usuarios, el sistema puede anticipar aproximadamente 8 reservas. Esto facilita la planificación de recursos.
+En el desplegable se muestra un segundo gráfico con la recta de regresión (línea roja) superpuesta sobre los puntos para visualizar el ajuste.
 
 ---
 
-## Sección 6: Intervalo de Confianza (IC al 95%)
+## Sección 5: Predicción por interpolación (Análisis Numérico)
 
-Esta sección pasa de la estadística descriptiva a la estadística inferencial. Mientras que las secciones anteriores describían la muestra de 50 reservas, ahora queremos inferir algo sobre toda la población de reservas del coworking.
+Acá se usa la recta de regresión como función de interpolación para estimar reservas en escenarios que no ocurrieron.
 
-### ¿Qué es un intervalo de confianza?
+### Qué es la interpolación
 
-Es un rango de valores dentro del cual estimamos que se encuentra el verdadero valor del parámetro poblacional (en este caso, la media de duración de todas las reservas). No conocemos la media real porque no podemos medir todas las reservas que se harán en el coworking, pero con la muestra podemos dar una estimación con un nivel de confianza.
+Interpolación es estimar valores que no tenemos pero que caen dentro del rango de datos observados (entre 5 y 33 usuarios en nuestro caso). Se diferencia de la extrapolación, que estima fuera del rango y es menos confiable.
 
-### Cards de resumen:
-- Mínimo estimado: 2.94 h (límite inferior del IC)
-- Promedio observado: 3.50 h (mejor estimación puntual)
-- Máximo estimado: 4.06 h (límite superior del IC)
+### Cómo se hace
 
-### Barra visual
+Se buscan valores de usuarios que nunca ocurrieron en los 30 días (por ejemplo, nunca hubo un día con exactamente 10 usuarios) y se reemplaza x en la ecuación:
 
-Es una representación gráfica del intervalo. El punto azul central es la media muestral (3.50h) y la barra celeste representa el rango del intervalo (2.94 a 4.06).
+Para x = 10 usuarios:
+ŷ = 0.6934 × 10 + 1.2459 = 8.18 reservas
 
-### Desarrollo paso a paso
+Para x = 25 usuarios:
+ŷ = 0.6934 × 25 + 1.2459 = 18.58 reservas
 
-Paso 1 — Datos:
-- x̄ = 3.5000 (media muestral, calculada en la sección 3)
-- S = 1.9646 (desvío estándar muestral, calculado en la sección 3)
-- n = 50 (tamaño de la muestra)
-- Nivel de confianza: 1 - α = 0.95, entonces α = 0.05
+Estos valores no están en los datos originales. Son estimaciones obtenidas mediante interpolación.
 
-Paso 2 — Elección de la distribución:
-Como el desvío poblacional σ es desconocido y se estima con el desvío muestral S, usamos la distribución t de Student en lugar de la distribución normal Z. Los grados de libertad son gl = n - 1 = 50 - 1 = 49. Nota: si conociéramos σ, usaríamos Z. A medida que n crece, la distribución t se aproxima a la normal.
+### Por qué se usa mínimos cuadrados
 
-Paso 3 — Valor crítico:
-Dividimos α en dos porque el intervalo tiene dos lados: α/2 = 0.05/2 = 0.025.
-Buscamos en la tabla de t de Student con gl = 49 y α/2 = 0.025:
-t(α/2) = 2.0096
+Mínimos cuadrados es un método numérico de ajuste de curvas. A diferencia de Lagrange o Newton que pasan exactamente por cada punto, mínimos cuadrados busca la mejor aproximación global minimizando el error. Es más adecuado cuando los datos tienen variabilidad, como en nuestro caso donde no todos los días con la misma cantidad de usuarios tienen la misma cantidad de reservas.
 
-Paso 4 — Error estándar de la media:
-EE = S / √n
-EE = 1.9646 / √50
-EE = 1.9646 / 7.0711
-EE = 0.2778
+### Para qué sirve
 
-El error estándar mide qué tan precisa es nuestra media muestral como estimación de la media poblacional. Cuantos más datos tengamos (n más grande), más chico es el error estándar y más precisa es la estimación.
+Le permite al administrador del coworking anticipar la demanda. Si ve que hoy se conectaron 25 usuarios, puede estimar que va a haber unas 19 reservas y preparar recursos.
 
-Paso 5 — Margen de error:
-E = t(α/2) × EE
-E = 2.0096 × 0.2778
-E = 0.5583
+---
 
-El margen de error es lo que le sumamos y restamos a la media muestral para construir el intervalo.
+## Sección 6: Intervalo de Confianza al 95%
 
-Paso 6 — Intervalo de confianza:
-IC = (x̄ - E ; x̄ + E)
-IC = (3.5000 - 0.5583 ; 3.5000 + 0.5583)
-IC = (2.9417 ; 4.0583)
-Redondeado: IC = (2.94 ; 4.06)
+Hasta ahora todo fue estadística descriptiva (describir la muestra). Ahora pasamos a estadística inferencial: queremos estimar algo sobre toda la población de reservas del coworking, no solo las 50 que analizamos.
 
-### Interpretación del 95% de confianza
+### Qué muestra la pantalla
 
-El 95% de confianza NO significa que hay un 95% de probabilidad de que la media real esté entre 2.94 y 4.06. Lo que significa es: si repitiéramos el proceso completo 100 veces (tomar una muestra de 50 reservas, calcular la media, construir el IC), en 95 de esas 100 veces el intervalo calculado contendría la media real. Es una medida de la confiabilidad del método, no del resultado puntual.
+Tres tarjetas:
+- Mínimo estimado: 2.94 horas
+- Promedio observado: 3.50 horas
+- Máximo estimado: 4.06 horas
+
+Y una barra visual con el punto azul (media) y el rango del intervalo.
+
+Esto significa: la duración promedio real de todas las reservas del coworking está entre 2.94 y 4.06 horas, con un 95% de confianza.
+
+### Cálculo paso a paso
+
+Paso 1 — Datos: x̄ = 3.5000, S = 1.9646, n = 50, confianza = 95% (α = 0.05).
+
+Paso 2 — Se usa t de Student porque no conocemos el desvío poblacional σ, solo el muestral S. Los grados de libertad son gl = n - 1 = 49.
+
+Paso 3 — Valor crítico: buscamos en la tabla t con gl = 49 y α/2 = 0.025. El resultado es t = 2.0096.
+
+Paso 4 — Error estándar: EE = S / √n = 1.9646 / √50 = 0.2778. Mide qué tan precisa es nuestra media muestral.
+
+Paso 5 — Margen de error: E = t × EE = 2.0096 × 0.2778 = 0.5583. Es lo que se suma y resta a la media.
+
+Paso 6 — Intervalo: IC = (3.50 - 0.56 ; 3.50 + 0.56) = (2.94 ; 4.06).
+
+### Qué significa el 95%
+
+Si repitiéramos el proceso 100 veces (tomar 50 reservas y calcular el IC), en 95 de esas veces el intervalo contendría la media real. Es la confiabilidad del método.
 
 ---
 
@@ -372,145 +228,65 @@ El 95% de confianza NO significa que hay un 95% de probabilidad de que la media 
 
 La prueba de hipótesis responde una pregunta concreta: ¿la duración promedio real es 3 horas, o es diferente?
 
-### ¿Qué es una prueba de hipótesis?
-
-Es un procedimiento estadístico para tomar una decisión sobre un parámetro poblacional basándose en datos muestrales. Se plantean dos hipótesis contrapuestas y se usa un estadístico calculado con los datos para decidir cuál se mantiene.
-
 ### Las dos hipótesis
 
-Suposición inicial (H₀ - hipótesis nula): μ = 3
-La duración promedio real de las reservas es de 3 horas. Esta es la hipótesis que ponemos a prueba. Se asume verdadera hasta que los datos la contradigan.
+- H₀ (hipótesis nula): μ = 3. La duración promedio real es 3 horas. Se asume verdadera hasta que los datos la contradigan.
+- Hₐ (hipótesis alternativa): μ ≠ 3. La duración promedio real es diferente de 3 horas.
+- Es bilateral (dos colas) porque nos importa si es diferente en cualquier dirección.
 
-Alternativa (Hₐ - hipótesis alternativa): μ ≠ 3
-La duración promedio real es diferente de 3 horas. Se acepta solo si los datos muestran una diferencia estadísticamente significativa.
+### Cálculo paso a paso
 
-Es una prueba bilateral (de dos colas) porque nos importa si el promedio es diferente en cualquier dirección, tanto mayor como menor que 3.
+Paso 1 — Datos: μ₀ = 3 (valor supuesto), S = 1.9646, n = 50, α = 0.05.
 
-### Desarrollo paso a paso
+Paso 2 — Hipótesis: H₀: μ = 3, Hₐ: μ ≠ 3, prueba bilateral.
 
-Paso 1 — Datos:
-- μ₀ = 3 (el valor supuesto que queremos probar)
-- S = 1.9646 (desvío estándar muestral)
-- n = 50
-- α = 0.05 (nivel de significancia: aceptamos un 5% de probabilidad de rechazar H₀ siendo verdadera)
+Paso 3 — Se usa t de Student porque σ es desconocido. gl = n - 1 = 49.
 
-Paso 2 — Hipótesis:
-- H₀: μ = 3
-- Hₐ: μ ≠ 3
-- Prueba bilateral (dos colas)
+Paso 4 — Valor crítico: buscamos en la tabla t con gl = 49 y α/2 = 0.025. El resultado es tc = ±2.0096. Si nuestro estadístico cae más allá de estos límites, rechazamos H₀.
 
-Paso 3 — Distribución muestral:
-Como σ es desconocido y se estima con S, usamos la distribución t de Student.
-X̄ ~ t(gl = n - 1) = t(49)
+Paso 5 — La fórmula del estadístico de prueba es: tp = (X̄ - μ₀) / (S / √n). Lo que hace es medir qué tan lejos está el promedio observado del valor supuesto, medido en unidades de error estándar.
 
-Paso 4 — Valor crítico:
-α/2 = 0.05/2 = 0.025
-gl = n - 1 = 50 - 1 = 49
-Buscando en la tabla t de Student con gl = 49 y α/2 = 0.025:
-tc = ±2.0096
+Paso 6 — Regla de decisión: si |tp| ≥ 2.0096 se rechaza H₀. Si |tp| < 2.0096 no se rechaza.
 
-Esto define las zonas de decisión:
-- Zona de rechazo: tp > 2.0096 o tp < -2.0096
-- Zona de no rechazo: -2.0096 < tp < 2.0096
+Paso 7 — Cálculo: tp = (3.5000 - 3) / (1.9646 / √50) = 0.5000 / 0.2778 = 1.7996. El promedio observado está a 1.80 errores estándar del valor supuesto.
 
-Paso 5 — Fórmula del estadístico de prueba:
-tp = (X̄ - μ₀) / (S / √n)
+Paso 8 — Decisión: |1.7996| = 1.80 < 2.0096. No llegamos al límite. No rechazamos H₀.
 
-Esta fórmula mide qué tan lejos está el promedio observado del valor supuesto, expresado en unidades de error estándar. Si tp es grande (positivo o negativo), significa que la diferencia es probablemente real. Si tp es chico, la diferencia podría deberse al azar.
+Paso 9 — Conclusión: no hay evidencia suficiente para decir que el promedio real es diferente de 3 horas. Aunque el promedio observado es 3.50, esa diferencia de media hora no es estadísticamente significativa considerando la variabilidad de los datos.
 
-Paso 6 — Regla de decisión:
-Si |tp| ≥ tc → Rechazamos H₀ (la diferencia es significativa)
-Si |tp| < tc → No rechazamos H₀ (la diferencia no es significativa)
+### La barra visual
 
-Concretamente: si tp ≥ 2.0096 o tp ≤ -2.0096, rechazamos H₀.
+La barra roja-verde-roja muestra las zonas de decisión:
+- Zonas rojas en los extremos: zona de rechazo (más allá de ±2.0096)
+- Zona verde en el centro: zona de no rechazo
+- Punto azul: nuestro tp = 1.7996
+- El punto está en la zona verde, por eso no rechazamos.
 
-Paso 7 — Cálculo del estadístico (estandarización):
-X̄ = 3.5000
+### Por qué no se rechaza si el promedio es 3.50
 
-tp = (3.5000 - 3) / (1.9646 / √50)
-tp = 0.5000 / 0.2778
-tp = 1.7996
+Porque la variabilidad es alta (CV = 56%). Con tanta dispersión, una diferencia de media hora puede ser simplemente producto del azar del muestreo. Si tuviéramos más datos o menos dispersión, la misma diferencia probablemente sí sería significativa.
 
-¿Qué significa tp = 1.7996? Que el promedio observado (3.50h) está a 1.80 errores estándar del valor supuesto (3.00h). No es lo suficientemente lejos como para ser sospechoso al nivel de confianza del 95%.
+### Qué significa para el sistema
 
-Paso 8 — Decisión:
-|tp| = |1.7996| = 1.7996
-tc = 2.0096
-1.7996 < 2.0096 → No rechazamos H₀
-
-Paso 9 — Conclusión:
-Con la evidencia de los datos muestrales, no podemos concluir que la duración promedio de las reservas del coworking sea diferente de 3 horas. Se mantiene la suposición de que el promedio es 3h.
-
-### Barra visual de la prueba
-
-La barra en la pantalla muestra:
-- Zonas rojas en los extremos: zonas de rechazo (más allá de ±2.0096)
-- Zona verde en el centro: zona de no rechazo (entre -2.0096 y +2.0096)
-- Punto azul: la posición de nuestro estadístico tp = 1.7996
-- Líneas rojas verticales: los valores críticos ±2.0096
-
-El punto azul está en la zona verde, lo que confirma visualmente que no rechazamos H₀.
-
-### ¿Por qué no se rechaza si el promedio muestral es 3.50?
-
-Porque la variabilidad de los datos es alta (CV = 56%). Con tanta dispersión, una diferencia de 0.50 horas entre el promedio observado y el valor supuesto puede deberse simplemente al azar del muestreo. Si la variabilidad fuera más baja (por ejemplo, CV = 15%), o si tuviéramos muchos más datos (por ejemplo, n = 200), la misma diferencia de 0.50 horas probablemente sí sería significativa.
-
-### Implicancia para BookDesk
-
-No hay evidencia estadística de que el uso real del coworking se aleje de las 3 horas promedio. Los slots de tiempo del sistema están bien calibrados y son coherentes con el comportamiento de los usuarios.
+Los slots de tiempo del sistema están bien configurados. No hay evidencia de que el uso real se aleje de las 3 horas promedio.
 
 ---
 
 ## Sección 8: Recomendaciones para BookDesk
 
-Son conclusiones prácticas que conectan el análisis estadístico con decisiones de ingeniería de software:
+Son conclusiones prácticas que conectan el análisis con el sistema:
 
-1. Slots de tiempo flexibles: Como el 50% de las reservas dura entre 2.0h (Q1) y 5.25h (Q3), conviene ofrecer opciones predeterminadas de 1h, 2h y 4h para agilizar el proceso de reserva.
-
-2. Anticipar días de alta demanda: Usando el modelo de regresión, cuando hay más de 25 usuarios activos se esperan más de 18 reservas. El sistema puede alertar al administrador para habilitar recursos extra.
-
-3. Sugerencias automáticas de duración: Para salas de reuniones sugerir 2.0h (la moda). Para escritorios sugerir jornada parcial o completa según el historial del usuario.
-
-4. Monitoreo continuo: Si el promedio de duración sale del rango del intervalo de confianza (2.94h - 4.06h), puede indicar un cambio en los patrones de uso que requiere atención del administrador.
+1. Ofrecer slots predeterminados de 1h, 2h y 4h, porque el 50% de las reservas dura entre 2h y 5.25h.
+2. Alertar al administrador cuando hay más de 25 usuarios activos, porque el modelo predice más de 18 reservas.
+3. Sugerir 2 horas para salas (la moda) y jornada completa para escritorios.
+4. Monitorear si el promedio sale del rango 2.94h a 4.06h, porque indicaría un cambio en los patrones de uso.
 
 ---
 
-## Relación entre las tres materias
+## Cómo se relacionan las tres materias
 
-### Probabilidad y Estadística
-Abarca la estadística descriptiva (media, mediana, moda, varianza, desvío, CV, cuartiles, histograma), la regresión lineal con correlación de Pearson, el intervalo de confianza al 95% con t de Student, y la prueba de hipótesis bilateral.
+Probabilidad y Estadística: estadística descriptiva (media, mediana, moda, varianza, desvío, CV, cuartiles, histograma), regresión lineal, correlación de Pearson, intervalo de confianza con t de Student, y prueba de hipótesis bilateral.
 
-### Análisis Numérico
-Se aplica en el ajuste de la recta por mínimos cuadrados (método numérico de aproximación de funciones) y en la interpolación lineal usando la recta obtenida para estimar valores no observados dentro del rango de datos.
+Análisis Numérico: ajuste de la recta por mínimos cuadrados (método numérico de aproximación) e interpolación lineal para estimar valores no observados dentro del rango de datos.
 
-### Ingeniería de Software II
-Se refleja en el desarrollo del sistema completo: arquitectura React con componentes reutilizables, generación reproducible de datos con semilla fija, visualización interactiva con Recharts, despliegue continuo con Vercel, y la integración del análisis estadístico como módulo funcional del sistema que aporta valor al administrador del coworking.
-
----
-
-## Valores numéricos exactos para verificación
-
-Estadística descriptiva:
-- n = 50, Σxi = 175.00, x̄ = 3.5000, Me = 3.00, Mo = 2.0
-- S² = 3.8597, S = 1.9646, CV = 56.13%
-- Min = 0.50, Max = 8.00, Rango = 7.50, Q1 = 2.00, Q3 = 5.25
-
-Histograma:
-- k = 7 clases, Amplitud = 1.1
-- Frecuencias: 7, 17, 8, 5, 4, 7, 2
-
-Regresión (30 días):
-- ΣX = 523, ΣY = 400, ΣXY = 8275, ΣX² = 10995, ΣY² = 6302
-- x̄ = 17.4333, ȳ = 13.3333
-- m = 0.6934, b = 1.2459
-- r = 0.9652, r² = 0.9317
-
-Intervalo de confianza:
-- EE = 0.2778, E = 0.5583
-- t(0.025, 49) = 2.0096
-- IC = (2.94 ; 4.06)
-
-Prueba de hipótesis:
-- H₀: μ = 3, Hₐ: μ ≠ 3
-- tp = 1.7996, tc = ±2.0096
-- Decisión: No rechazar H₀
+Ingeniería de Software II: desarrollo del sistema completo con React, visualización interactiva con gráficos, despliegue en la nube con Vercel, y el módulo de estadística como funcionalidad que aporta valor al administrador del coworking.
