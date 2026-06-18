@@ -570,24 +570,30 @@ export default function AdminEstadisticaPage() {
           </Insight>
 
           <Desarrollo>
-            <Paso numero={1} titulo="Identificar los datos">
-              <p>x̄ = {est.media.toFixed(4)} &nbsp;&nbsp;|&nbsp;&nbsp; S = {est.desvio.toFixed(4)} &nbsp;&nbsp;|&nbsp;&nbsp; n = {est.n}</p>
-              <p>Nivel de confianza: 95% (α = 0,05)</p>
-              <p>Grados de libertad: gl = n − 1 = {inf.gl}</p>
+            <Paso numero={1} titulo="Datos">
+              <p>x̄ = {est.media.toFixed(4)}</p>
+              <p>S = {est.desvio.toFixed(4)}</p>
+              <p>n = {est.n}</p>
+              <p>Nivel de confianza: 1 − α = 0,95 → α = 0,05</p>
             </Paso>
-            <Paso numero={2} titulo="Valor crítico t de Student">
-              <p>Buscamos t<sub>α/2, gl</sub> = t<sub>0,025; {inf.gl}</sub> en la tabla t de Student.</p>
-              <p>t<sub>crítico</sub> = <b>{inf.tCrit}</b></p>
+            <Paso numero={2} titulo="Distribución">
+              <p>Como σ es desconocido y se estima con S, usamos t de Student.</p>
+              <p>gl = n − 1 = {est.n} − 1 = {inf.gl}</p>
             </Paso>
-            <Paso numero={3} titulo="Error estándar de la media">
+            <Paso numero={3} titulo="Valor crítico">
+              <p>α/2 = 0,025</p>
+              <p>Buscando en la tabla t con gl = {inf.gl}:</p>
+              <p>t<sub>α/2</sub> = <b>{inf.tCrit}</b></p>
+            </Paso>
+            <Paso numero={4} titulo="Error estándar de la media">
               <Formula>EE = S / √n</Formula>
               <p>EE = {est.desvio.toFixed(4)} / √{est.n} = {est.desvio.toFixed(4)} / {Math.sqrt(est.n).toFixed(4)} = <b>{inf.errorEst.toFixed(4)}</b></p>
             </Paso>
-            <Paso numero={4} titulo="Margen de error">
-              <Formula>E = t_crítico × EE</Formula>
+            <Paso numero={5} titulo="Margen de error">
+              <Formula>E = t<sub>α/2</sub> × EE</Formula>
               <p>E = {inf.tCrit} × {inf.errorEst.toFixed(4)} = <b>{inf.margenError.toFixed(4)}</b></p>
             </Paso>
-            <Paso numero={5} titulo="Intervalo de confianza">
+            <Paso numero={6} titulo="Intervalo de confianza">
               <Formula>IC = (x̄ − E &nbsp;;&nbsp; x̄ + E)</Formula>
               <p>IC = ({est.media.toFixed(4)} − {inf.margenError.toFixed(4)} &nbsp;;&nbsp; {est.media.toFixed(4)} + {inf.margenError.toFixed(4)})</p>
               <p><b>IC = ({inf.icInf.toFixed(4)} ; {inf.icSup.toFixed(4)})</b></p>
@@ -659,32 +665,47 @@ export default function AdminEstadisticaPage() {
           </div>
 
           <Desarrollo>
-            <Paso numero={1} titulo="Plantear las hipótesis">
-              <p>H₀: μ = {inf.mu0} (la duración promedio es {inf.mu0} horas)</p>
-              <p>H₁: μ ≠ {inf.mu0} (la duración promedio es diferente de {inf.mu0} horas)</p>
-              <p>Prueba bilateral con α = 0,05</p>
+            <Paso numero={1} titulo="Datos">
+              <p>μ₀ = {inf.mu0} (valor supuesto)</p>
+              <p>S = {est.desvio.toFixed(4)} (desvío estándar muestral)</p>
+              <p>n = {est.n}</p>
+              <p>α = 0,05</p>
             </Paso>
-            <Paso numero={2} titulo="Nivel de significación y valor crítico">
-              <p>α = 0,05 → α/2 = 0,025</p>
-              <p>Grados de libertad: gl = n − 1 = {est.n} − 1 = {inf.gl}</p>
-              <p>Buscando en la tabla t de Student: t<sub>crítico</sub> = ±{inf.tCrit}</p>
-              <p>Zona de rechazo: t {'<'} −{inf.tCrit} &nbsp;o&nbsp; t {'>'} {inf.tCrit}</p>
+            <Paso numero={2} titulo="Hipótesis">
+              <p>H₀: μ = {inf.mu0}</p>
+              <p>Hₐ: μ ≠ {inf.mu0}</p>
+              <p>Prueba de hipótesis de dos colas (bilateral)</p>
             </Paso>
-            <Paso numero={3} titulo="Calcular el estadístico de prueba">
-              <Formula>t = (x̄ − μ₀) / (S / √n)</Formula>
-              <p>t = ({est.media.toFixed(4)} − {inf.mu0}) / ({est.desvio.toFixed(4)} / √{est.n})</p>
-              <p>t = {(est.media - inf.mu0).toFixed(4)} / {inf.errorEst.toFixed(4)}</p>
-              <p>t = <b>{inf.tCalc.toFixed(4)}</b></p>
+            <Paso numero={3} titulo="Distribución muestral">
+              <p>Como σ es desconocido y se estima con S, usamos la distribución t de Student.</p>
+              <Formula>X̄ ~ t(gl = n − 1) = t({inf.gl})</Formula>
             </Paso>
-            <Paso numero={4} titulo="Comparar con el valor crítico">
-              <p>|t<sub>calculado</sub>| = {Math.abs(inf.tCalc).toFixed(4)}</p>
-              <p>t<sub>crítico</sub> = {inf.tCrit}</p>
-              <p>{Math.abs(inf.tCalc).toFixed(4)} {Math.abs(inf.tCalc) > inf.tCrit ? '>' : '<'} {inf.tCrit} → <b>{Math.abs(inf.tCalc) > inf.tCrit ? 'Cae en zona de rechazo' : 'No cae en zona de rechazo'}</b></p>
+            <Paso numero={4} titulo="Valor crítico">
+              <p>α/2 = 0,05/2 = 0,025</p>
+              <p>gl = n − 1 = {est.n} − 1 = {inf.gl}</p>
+              <p>Buscando en la tabla t de Student con gl = {inf.gl} y α/2 = 0,025:</p>
+              <p>t<sub>c</sub> = <b>±{inf.tCrit}</b></p>
             </Paso>
-            <Paso numero={5} titulo="Conclusión">
+            <Paso numero={5} titulo="Fórmula del estadístico de prueba">
+              <Formula>tp = (X̄ − μ₀) / (S / √n)</Formula>
+            </Paso>
+            <Paso numero={6} titulo="Regla de decisión">
+              <Formula>{'{'} |tp| ≥ t<sub>c</sub> → Rechazo H₀ {'}'}</Formula>
+              <p>tp ≥ {inf.tCrit} &nbsp;&nbsp;o&nbsp;&nbsp; tp ≤ −{inf.tCrit}</p>
+            </Paso>
+            <Paso numero={7} titulo="Estandarización del estadístico de prueba">
+              <p>X̄ = {est.media.toFixed(4)}</p>
+              <Formula>tp = ({est.media.toFixed(4)} − {inf.mu0}) / ({est.desvio.toFixed(4)} / √{est.n})</Formula>
+              <p>tp = {(est.media - inf.mu0).toFixed(4)} / {inf.errorEst.toFixed(4)}</p>
+              <p>tp = <b>{inf.tCalc.toFixed(4)}</b></p>
+            </Paso>
+            <Paso numero={8} titulo="Decisión">
+              <p>Como {inf.tCalc.toFixed(4)} {Math.abs(inf.tCalc) > inf.tCrit ? (inf.tCalc > 0 ? '>' : '<') : (inf.tCalc > 0 ? '<' : '>')} {inf.tCalc > 0 ? '' : '−'}{inf.tCrit} → <b>{inf.rechazo ? 'Rechazamos H₀' : 'No rechazamos H₀'}</b></p>
+            </Paso>
+            <Paso numero={9} titulo="Conclusión">
               <p>{inf.rechazo
-                ? `Como |t| > t_crítico, se rechaza H₀. Hay evidencia estadística suficiente para afirmar que la duración promedio es diferente de ${inf.mu0} horas.`
-                : `Como |t| < t_crítico, no se rechaza H₀. No hay evidencia estadística suficiente para afirmar que la duración promedio sea diferente de ${inf.mu0} horas. La suposición de ${inf.mu0} horas se mantiene.`
+                ? `Con evidencia en los datos muestrales podemos concluir que la duración promedio de las reservas del coworking es diferente de ${inf.mu0} horas.`
+                : `Con evidencia en los datos muestrales no podemos concluir que la duración promedio de las reservas del coworking sea diferente de ${inf.mu0} horas. Se mantiene la suposición de que el promedio es ${inf.mu0}h.`
               }</p>
             </Paso>
           </Desarrollo>
