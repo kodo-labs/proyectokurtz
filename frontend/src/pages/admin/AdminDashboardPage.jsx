@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import TopBar from '../../components/layout/TopBar'
 import Badge from '../../components/common/Badge'
 import WeeklyCalendar from '../../components/calendar/WeeklyCalendar'
-import { formatDate } from '../../data/mockData'
+import { formatDate, formatShortDate, WEEK_DAYS } from '../../data/mockData'
 import { useReservations } from '../../context/ReservationsContext'
 import { useResources } from '../../context/ResourcesContext'
 import { fetchProfiles } from '../../services/bookdeskRepository'
@@ -34,7 +34,7 @@ export default function AdminDashboardPage() {
   const { resources } = useResources()
   const [selectedResource, setSelectedResource] = useState(resources[0]?.id ?? '')
   const [showBlockForm, setShowBlockForm] = useState(false)
-  const [blockDate, setBlockDate] = useState('2026-04-07')
+  const [blockDate, setBlockDate] = useState(WEEK_DAYS[0].date)
   const [blockStart, setBlockStart] = useState('08:00')
   const [blockEnd, setBlockEnd] = useState('18:00')
   const [blockSuccess, setBlockSuccess] = useState(false)
@@ -186,11 +186,9 @@ export default function AdminDashboardPage() {
                 <p className="mb-3 text-sm font-black text-amber-800">Bloquear {resources.find(r => r.id === selectedResource)?.name}</p>
                 <div className="grid gap-3 sm:grid-cols-3">
                   <select value={blockDate} onChange={e => setBlockDate(e.target.value)} className="rounded-xl border border-amber-100 bg-white px-3 py-2 text-xs font-bold">
-                    <option value="2026-04-07">Lun 07/04</option>
-                    <option value="2026-04-08">Mar 08/04</option>
-                    <option value="2026-04-09">Mie 09/04</option>
-                    <option value="2026-04-10">Jue 10/04</option>
-                    <option value="2026-04-11">Vie 11/04</option>
+                    {WEEK_DAYS.map(day => (
+                      <option key={day.date} value={day.date}>{day.label} {formatShortDate(day.date)}</option>
+                    ))}
                   </select>
                   <select value={blockStart} onChange={e => setBlockStart(e.target.value)} className="rounded-xl border border-amber-100 bg-white px-3 py-2 text-xs font-bold">
                     {['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'].map(t => <option key={t}>{t}</option>)}

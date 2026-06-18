@@ -1,4 +1,4 @@
-import { WEEK_DAYS, TIME_SLOTS, isSlotOccupied, getSlotReservation } from '../../data/mockData'
+import { WEEK_DAYS, TIME_SLOTS, isSlotOccupied, getSlotReservation, formatShortDate } from '../../data/mockData'
 import { useAuth } from '../../context/AuthContext'
 
 /**
@@ -43,7 +43,7 @@ export default function WeeklyCalendar({ resourceId, reservations, onSlotClick, 
           {WEEK_DAYS.map(day => (
             <div key={day.date} className="bg-gray-50 px-2 py-2 text-center">
               <p className="text-xs font-bold text-gray-700">{day.label}</p>
-              <p className="text-xs text-gray-400">{day.date.slice(8)}/04</p>
+              <p className="text-xs text-gray-400">{formatShortDate(day.date)}</p>
             </div>
           ))}
         </div>

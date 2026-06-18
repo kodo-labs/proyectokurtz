@@ -112,15 +112,16 @@ export const RESOURCES = [
   },
 ]
 
-// ─── Reservas (semana del 7 al 11 de abril 2026) ───────────────────────────────
+// ─── Reservas (semana actual) ────────────────────────────────────────────────
 // status: 'confirmed' | 'pending' | 'cancelled'
+const _w = WEEK_DAYS
 export const INITIAL_RESERVATIONS = [
   // Sala Alpha
   {
     id: 'r001',
     resourceId: 'sala-alpha',
     userId: 1,
-    date: '2026-04-07',
+    date: _w[0].date,
     startTime: '09:00',
     endTime: '11:00',
     status: 'confirmed',
@@ -130,7 +131,7 @@ export const INITIAL_RESERVATIONS = [
     id: 'r002',
     resourceId: 'sala-alpha',
     userId: 2,
-    date: '2026-04-07',
+    date: _w[0].date,
     startTime: '14:00',
     endTime: '16:00',
     status: 'confirmed',
@@ -140,7 +141,7 @@ export const INITIAL_RESERVATIONS = [
     id: 'r003',
     resourceId: 'sala-alpha',
     userId: 2,
-    date: '2026-04-09',
+    date: _w[2].date,
     startTime: '10:00',
     endTime: '12:00',
     status: 'confirmed',
@@ -151,7 +152,7 @@ export const INITIAL_RESERVATIONS = [
     id: 'r004',
     resourceId: 'sala-beta',
     userId: 1,
-    date: '2026-04-08',
+    date: _w[1].date,
     startTime: '11:00',
     endTime: '13:00',
     status: 'confirmed',
@@ -161,7 +162,7 @@ export const INITIAL_RESERVATIONS = [
     id: 'r005',
     resourceId: 'sala-beta',
     userId: 2,
-    date: '2026-04-10',
+    date: _w[3].date,
     startTime: '09:00',
     endTime: '10:00',
     status: 'pending',
@@ -172,7 +173,7 @@ export const INITIAL_RESERVATIONS = [
     id: 'r006',
     resourceId: 'sala-gamma',
     userId: 3,
-    date: '2026-04-10',
+    date: _w[3].date,
     startTime: '08:00',
     endTime: '18:00',
     status: 'confirmed',
@@ -183,7 +184,7 @@ export const INITIAL_RESERVATIONS = [
     id: 'r007',
     resourceId: 'sala-gamma',
     userId: 1,
-    date: '2026-04-11',
+    date: _w[4].date,
     startTime: '10:00',
     endTime: '13:00',
     status: 'confirmed',
@@ -194,7 +195,7 @@ export const INITIAL_RESERVATIONS = [
     id: 'r008',
     resourceId: 'escritorio-a1',
     userId: 2,
-    date: '2026-04-07',
+    date: _w[0].date,
     startTime: '08:00',
     endTime: '18:00',
     status: 'confirmed',
@@ -204,7 +205,7 @@ export const INITIAL_RESERVATIONS = [
     id: 'r009',
     resourceId: 'escritorio-a2',
     userId: 1,
-    date: '2026-04-08',
+    date: _w[1].date,
     startTime: '08:00',
     endTime: '14:00',
     status: 'confirmed',
@@ -214,7 +215,7 @@ export const INITIAL_RESERVATIONS = [
     id: 'r010',
     resourceId: 'escritorio-a3',
     userId: 1,
-    date: '2026-04-09',
+    date: _w[2].date,
     startTime: '09:00',
     endTime: '17:00',
     status: 'confirmed',
@@ -228,15 +229,30 @@ export const TIME_SLOTS = [
   '13:00', '14:00', '15:00', '16:00', '17:00', '18:00',
 ]
 
-export const WEEK_DAYS = [
-  { label: 'Lun', date: '2026-04-07' },
-  { label: 'Mar', date: '2026-04-08' },
-  { label: 'Mié', date: '2026-04-09' },
-  { label: 'Jue', date: '2026-04-10' },
-  { label: 'Vie', date: '2026-04-11' },
-]
+function getCurrentWeekDays() {
+  const today = new Date()
+  const dow = today.getDay()
+  const monday = new Date(today)
+  monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1))
+  const labels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie']
+  return labels.map((label, i) => {
+    const d = new Date(monday)
+    d.setDate(monday.getDate() + i)
+    const yyyy = d.getFullYear()
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    const dd = String(d.getDate()).padStart(2, '0')
+    return { label, date: `${yyyy}-${mm}-${dd}` }
+  })
+}
+
+export const WEEK_DAYS = getCurrentWeekDays()
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
+export function formatShortDate(dateStr) {
+  const [, month, day] = dateStr.split('-')
+  return `${day}/${month}`
+}
+
 export function formatDate(dateStr) {
   const [year, month, day] = dateStr.split('-')
   const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun',

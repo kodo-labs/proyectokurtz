@@ -7,6 +7,7 @@ import BookingModal from '../components/booking/BookingModal'
 import { useReservations } from '../context/ReservationsContext'
 import { useAuth } from '../context/AuthContext'
 import { useResources } from '../context/ResourcesContext'
+import { formatShortDate } from '../data/mockData'
 
 const STEPS = ['Recurso', 'Horario', 'Confirmar']
 
@@ -102,7 +103,7 @@ export default function BookingPage() {
               <span className="font-semibold text-gray-700">{resource?.name}</span>
             </p>
             <p className="text-gray-500 mb-6">
-              {success.date.slice(8)}/04 · {success.startTime}–{success.endTime}
+              {formatShortDate(success.date)} · {success.startTime}–{success.endTime}
             </p>
             <div className={`mb-6 rounded-lg border px-4 py-3 text-left text-sm ${
               success.notification?.ok
@@ -265,7 +266,7 @@ export default function BookingPage() {
             {selectedDate && selectedStart && (
               <div className="flex items-center gap-4">
                 <div className="flex-1 bg-brand-50 border border-brand-200 rounded-lg px-4 py-3 text-sm text-brand-800">
-                  Seleccionaste: <strong>{selectedDate.slice(8)}/04</strong> de <strong>{selectedStart}</strong> a <strong>{selectedEnd}</strong> ({DURATION_OPTIONS.find(o => o.value === duration)?.label})
+                  Seleccionaste: <strong>{formatShortDate(selectedDate)}</strong> de <strong>{selectedStart}</strong> a <strong>{selectedEnd}</strong> ({DURATION_OPTIONS.find(o => o.value === duration)?.label})
                 </div>
                 <button
                   onClick={() => setShowModal(true)}
