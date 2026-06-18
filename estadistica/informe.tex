@@ -238,11 +238,11 @@ Primero calculamos las sumatorias que vamos a necesitar para la regresión y la 
 \toprule
 \textbf{Sumatoria} & \textbf{Valor} \\
 \midrule
-$\sum x_i$ & 617 \\[4pt]
-$\sum y_i$ & 435 \\[4pt]
-$\sum x_i \cdot y_i$ & 10.394 \\[4pt]
-$\sum x_i^2$ & 15.091 \\[4pt]
-$\sum y_i^2$ & 7.311 \\
+$\sum x_i$ & 523 \\[4pt]
+$\sum y_i$ & 400 \\[4pt]
+$\sum x_i \cdot y_i$ & 8.275 \\[4pt]
+$\sum x_i^2$ & 10.995 \\[4pt]
+$\sum y_i^2$ & 6.302 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -251,51 +251,57 @@ $\sum y_i^2$ & 7.311 \\
 Con eso sacamos las medias:
 
 \vspace{4pt}
-$$\bar{x} = \frac{\sum x_i}{n} = \frac{617}{30} = 20{,}5667 \qquad \bar{y} = \frac{\sum y_i}{n} = \frac{435}{30} = 14{,}5000$$
-\vspace{4pt}
-
-Y las sumas de cuadrados y productos cruzados:
-
-\vspace{4pt}
-$$S_{xy} = \sum x_i y_i - n \cdot \bar{x} \cdot \bar{y} = 10394 - 30 \times 20{,}5667 \times 14{,}5 = 1447{,}50$$
-
-$$S_{xx} = \sum x_i^2 - n \cdot \bar{x}^2 = 15091 - 30 \times 20{,}5667^2 = 2401{,}37$$
-
-$$S_{yy} = \sum y_i^2 - n \cdot \bar{y}^2 = 7311 - 30 \times 14{,}5^2 = 1003{,}50$$
+$$\bar{x} = \frac{\sum x_i}{n} = \frac{523}{30} = 17{,}4333 \qquad \bar{y} = \frac{\sum y_i}{n} = \frac{400}{30} = 13{,}3333$$
 
 \subsection{Ecuación de regresión lineal}
 
-Con las sumatorias anteriores calculamos la pendiente y la ordenada al origen por mínimos cuadrados:
+Calculamos la pendiente $m$ y la ordenada al origen $b$ por mínimos cuadrados:
 
 \vspace{4pt}
-$$b_1 = \frac{S_{xy}}{S_{xx}} = \frac{1447{,}50}{2401{,}37} = 0{,}6028$$
+$$m = \frac{\sum_{i=1}^{n} x_i y_i - n \cdot \bar{x} \cdot \bar{y}}{\sum_{i=1}^{n} x_i^2 - n \cdot \bar{x}^2}$$
+\vspace{4pt}
 
-$$b_0 = \bar{y} - b_1 \cdot \bar{x} = 14{,}50 - 0{,}6028 \times 20{,}5667 = 2{,}1028$$
+El numerador (covarianza):
+
+$$\sum x_i y_i - n \cdot \bar{x} \cdot \bar{y} = 8275 - 30 \times 17{,}4333 \times 13{,}3333 = 1301{,}6667$$
+
+El denominador (varianza de $x$):
+
+$$\sum x_i^2 - n \cdot \bar{x}^2 = 10995 - 30 \times 17{,}4333^2 = 1877{,}3667$$
+
+Entonces:
+
+$$m = \frac{1301{,}6667}{1877{,}3667} = 0{,}6934$$
+
+\vspace{6pt}
+Y la ordenada al origen:
+
+$$b = \bar{y} - m \cdot \bar{x} = 13{,}3333 - 0{,}6934 \times 17{,}4333 = 1{,}2459$$
 \vspace{4pt}
 
 La ecuación de la recta queda:
 
 \vspace{4pt}
-$$\boxed{\hat{y} = 2{,}1028 + 0{,}6028 \cdot x}$$
+$$\boxed{\hat{y} = 0{,}6934 \cdot x + 1{,}2459}$$
 \vspace{4pt}
 
-Esto quiere decir que por cada usuario activo más que se conecta en un día, se esperan aproximadamente 0,60 reservas adicionales. El término independiente (2,10) representaría una especie de ``piso'' de reservas que se hacen incluso con muy pocos usuarios, probablemente los que ya tienen reservas programadas de antes.
+Esto quiere decir que por cada usuario activo más que se conecta en un día, se esperan aproximadamente 0,69 reservas adicionales. El término independiente (1,25) representaría una especie de ``piso'' de reservas que se hacen incluso con muy pocos usuarios, probablemente los que ya tienen reservas programadas de antes.
 
 \subsection{Coeficiente de correlación}
 
-Calculamos el coeficiente de Pearson con los valores que ya teníamos:
+Calculamos el coeficiente de Pearson:
 
 \vspace{4pt}
-$$r = \frac{S_{xy}}{\sqrt{S_{xx} \cdot S_{yy}}} = \frac{1447{,}50}{\sqrt{2401{,}37 \times 1003{,}50}} = \frac{1447{,}50}{1552{,}21} = 0{,}9325$$
+$$r = \frac{\sum x_i y_i - n \cdot \bar{x} \cdot \bar{y}}{\sqrt{\left(\sum x_i^2 - n \cdot \bar{x}^2\right) \cdot \left(\sum y_i^2 - n \cdot \bar{y}^2\right)}} = \frac{1301{,}6667}{\sqrt{1877{,}3667 \times 968{,}6933}} = \frac{1301{,}6667}{1348{,}5646} = 0{,}9652$$
 \vspace{4pt}
 
 Y el coeficiente de determinación:
 
 \vspace{4pt}
-$$r^2 = (0{,}9325)^2 = 0{,}8695$$
+$$r^2 = (0{,}9652)^2 = 0{,}9317$$
 \vspace{4pt}
 
-El $r$ de 0,93 es alto, lo que confirma que la relación entre usuarios activos y reservas es fuerte y positiva. Y el $r^2$ nos dice que el 87\% de la variación en las reservas se puede explicar por la cantidad de usuarios. Es un modelo que funciona bastante bien.
+El $r$ de 0,97 es alto, lo que confirma que la relación entre usuarios activos y reservas es fuerte y positiva. Y el $r^2$ nos dice que el 93\% de la variación en las reservas se puede explicar por la cantidad de usuarios. Es un modelo que funciona bastante bien.
 
 En la práctica, esto podría servir para que el administrador del coworking anticipe días de alta demanda. Si ve que hay muchos usuarios conectados temprano, ya sabe que va a haber muchas reservas y puede prepararse.
 
@@ -397,7 +403,7 @@ A partir de todo este análisis pudimos sacar varias conclusiones que impactan d
 \begin{enumerate}[itemsep=10pt]
   \item \textbf{Slots de tiempo predeterminados:} Como las duraciones varían mucho ($CV = 55{,}6\%$), tiene sentido ofrecer opciones rápidas de 1h, 2h, 4h y jornada completa en vez de que el usuario tenga que elegir la hora de inicio y fin manualmente. Eso haría más ágil la reserva.
 
-  \item \textbf{Anticipar la demanda:} El modelo de regresión con $r^2 = 0{,}87$ funciona bien para predecir reservas a partir de usuarios activos. Una idea sería agregar un indicador en el panel del administrador que muestre algo como ``hoy se esperan aproximadamente X reservas'' basándose en los usuarios que ya se conectaron.
+  \item \textbf{Anticipar la demanda:} El modelo de regresión con $r^2 = 0{,}93$ funciona bien para predecir reservas a partir de usuarios activos. Una idea sería agregar un indicador en el panel del administrador que muestre algo como ``hoy se esperan aproximadamente X reservas'' basándose en los usuarios que ya se conectaron.
 
   \item \textbf{Validar decisiones de diseño:} La prueba de hipótesis nos sirvió para confirmar algo que habíamos asumido al diseñar el sistema: que 3 horas es un buen valor por defecto para los bloques. Ahora tenemos un respaldo estadístico en vez de una suposición.
 
